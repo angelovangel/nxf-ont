@@ -1,13 +1,14 @@
-# guppy_cpu image based on https://hub.docker.com/r/genomicpariscentre/guppy/dockerfile
+# guppy CPU image based on https://hub.docker.com/r/genomicpariscentre/guppy/dockerfile
 
 # Set the base image to Ubuntu 16.04
 FROM ubuntu:16.04
 
-MAINTAINER Angel Angelov <aangeloo@gmail.com>
-
 ARG PACKAGE_VERSION=4.0.14
 ARG BUILD_PACKAGES="wget apt-transport-https"
 ARG DEBIAN_FRONTEND=noninteractive
+
+LABEL maintainer="aangeloo@gmail.com"
+LABEL description="A docker image containing the ONT guppy_cpu version ${PACKAGE_VERSION}"
 
 RUN apt update && \
     apt-get install --yes $BUILD_PACKAGES && \
