@@ -11,11 +11,23 @@ LABEL maintainer="aangeloo@gmail.com"
 LABEL description="A docker image containing the ONT guppy_cpu version ${PACKAGE_VERSION}"
 
 RUN apt update && \
-    apt-get install --yes $BUILD_PACKAGES && \
+    apt-get install --yes $BUILD_PACKAGES \
+                        libzmq5 \
+                        libhdf5-cpp-11 \
+                        libcurl4-openssl-dev \
+                        libssl-dev \
+                        libhdf5-10 \
+                        libboost-regex1.58.0 \
+                        libboost-log1.58.0 \
+                        libboost-atomic1.58.0 \
+                        libboost-chrono1.58.0 \
+                        libboost-date-time1.58.0 \
+                        libboost-filesystem1.58.0 \
+                        libboost-program-options1.58.0 \
+                        libboost-iostreams1.58.0 && \
     cd /tmp && \
-    # https://mirror.oxfordnanoportal.com/software/analysis/ont_guppy_cpu_4.0.14-1~xenial_amd64.deb
     wget -q https://mirror.oxfordnanoportal.com/software/analysis/ont_guppy_cpu_${PACKAGE_VERSION}-1~xenial_amd64.deb && \
-    apt-get install --yes libzmq5 libhdf5-cpp-11 libcurl4-openssl-dev libssl-dev libhdf5-10 libboost-regex1.58.0 libboost-log1.58.0 libboost-atomic1.58.0 libboost-chrono1.58.0 libboost-date-time1.58.0 libboost-filesystem1.58.0 libboost-program-options1.58.0 libboost-iostreams1.58.0 && \
+    # apt-get install --yes libzmq5 libhdf5-cpp-11 libcurl4-openssl-dev libssl-dev libhdf5-10 libboost-regex1.58.0 libboost-log1.58.0 libboost-atomic1.58.0 libboost-chrono1.58.0 libboost-date-time1.58.0 libboost-filesystem1.58.0 libboost-program-options1.58.0 libboost-iostreams1.58.0 && \
     dpkg -i *.deb && \
     rm *.deb && \
     apt-get autoremove --purge --yes && \
