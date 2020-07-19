@@ -3,7 +3,7 @@ A nextflow pipeline for processing raw Nanopore data
 
 ## working scheme
 
-- input - folder with basecalled ONT fastq files - also check extensions of files found
+- input - folder with fast5 or basecalled ONT fastq files - also check extensions of files found
 - optional input - csv file for matching barcode names to sample names
 - guppy_barcode to demultiplex - option to provide barcoding kit. Output - one fastq file per barcode
 - optional rename fastq files to sample names, e.g. barcode01.fastq to sample1.fastq
