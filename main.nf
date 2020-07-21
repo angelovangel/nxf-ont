@@ -31,6 +31,19 @@ ANSI_RESET = "\033[0m"
  * pipeline input parameters 
  */
 
+//Options: mandatory
+params.input = false
+
+// Options: guppy basecalling
+params.input_path = false
+params.flowcell = false
+params.kit = false
+params.barcode_kit = false
+params.guppy_config = false
+params.guppy_model = false
+
+//options: qc
+
 
 /*
 guppy basecalling
