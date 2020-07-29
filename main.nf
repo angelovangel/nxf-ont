@@ -66,7 +66,7 @@ if ( !params.skip_basecalling ) {
     file dir_fast5 from ch_fast5
 
     output:
-    file "basecalled_fastq/*.fastq" into ch_fastq
+    file "basecalled_fastq/*.fastq.gz" into ch_fastq
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
