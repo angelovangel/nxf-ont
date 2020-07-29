@@ -57,7 +57,7 @@ guppy basecalling
 if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
-    publisheDir path: "${params.outdir}", mode:'copy'
+    publishDir path: "${params.outdir}", mode:'copy'
 
     input:
     file dir_fast5 from ch_fast5
@@ -106,7 +106,7 @@ if ( !params.skip_basecalling ) {
     """
   }
 } else if ( params.skip_basecalling && ! params.skip_demultiplexing) {
-  publisheDir path: "${params.outdir}", mode:'copy'
+  publishDir path: "${params.outdir}", mode:'copy'
 
   input:
   file basecalled_files from ch_fastq.ifEmpty([])
