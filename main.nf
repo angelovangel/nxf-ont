@@ -35,10 +35,13 @@ ANSI_RESET = "\033[0m"
 params.input = false
 
 // Options: guppy basecalling
+params.skip_basecalling = false
+params.skip_demultiplexing = false
+
 params.input_path = false
 params.flowcell = false
 params.kit = false
-params.barcode_kit = false
+params.barcode_kits = false
 params.guppy_config = false
 params.guppy_model = false
 
@@ -51,7 +54,7 @@ params.config = false
 /*
 guppy basecalling
 */
-if (!params.skip_basecalling && !params.skip_demultiplexing) {
+if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
     publisheDir path: "${params.outdir}", mode:'copy'
@@ -60,12 +63,12 @@ if (!params.skip_basecalling && !params.skip_demultiplexing) {
     file dir_fast5 from ch_fast5
 
     output:
-    file "fastq/*.fastq" into ch_fastq
+    file "basecalled_fastq/*.fastq" into ch_fastq
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
     kit = params.kit ? "--kits $params.kit" : ""
-    barcode_kits = params.barcode_kits ? "--barcode_kits $params.barcode_kits" : ""
+    barcode_kits = params.barcode_kits && !params.skip_demultiplexing ? "--barcode_kits $params.barcode_kits" : ""
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
@@ -73,7 +76,7 @@ if (!params.skip_basecalling && !params.skip_demultiplexing) {
     num_callers = params.num_callers ? "--num_callers $params.num_callers" : "--num_callers 2"
 
     """
-    guppy_basecaller 
+    guppy_basecaller \\
       --input_path $input_path \\
       --save_path ./results-guppy_basecaller \\
       --recursive \\
@@ -86,8 +89,59 @@ if (!params.skip_basecalling && !params.skip_demultiplexing) {
       $num_callers \\
       --qscore_filtering \\
       $config \\
+      --compress_fastq \\
+
+    mkdir basecalled_fastq
+    cd results-guppy_basecaller
+    if [ "\$(find . type d -name "barcode*" )" != "" ]
+    then
+      for dir in barcode*/
+      do
+        dir=\${dir%*/}
+        cat \$dir/*.fastq.gz > ../basecalled_fastq/\$dir.fastq.gz
+      done
+    else
+      cat *.fastq.gz > ../basecalled_fastq/basecalled.fastq.gz
+    fi
     """
   }
+} else if ( params.skip_basecalling && ! params.skip_demultiplexing) {
+  publisheDir path: "${params.outdir}", mode:'copy'
+
+  input:
+  file basecalled_files from ch_fastq.ifEmpty([])
+
+  output:
+  file "barcode_fastq/*.fastq" into ch_barcode_fastq
+
+  script:
+  input_path = params.skip_basecalling ? params.input_path : basecalled_files
+  trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
+
+  """
+  guppy_barcoder \\
+    --input_path $basecalled_files \\
+    --save_path ./results-guppy-barcoder \\
+    --recursive \\
+    --records_per_fastq 0 \\
+    --compress_fastq \\
+    --barcode_kits $params.barcode_kits \\
+    $trim_barcodes \\
+    --work_threads 100 \\
+
+  mkdir barcode_fastq
+  cd results-guppy_barcoder
+  if [ "\$(find . type d -name "barcode*" )" != "" ]
+  then
+    for dir in barcode*/
+    do
+      dir=\${dir%*/}
+      cat \$dir/*.fastq.gz > ../basecalled_fastq/\$dir.fastq.gz
+    done
+  else
+    cat *.fastq.gz > ../basecalled_fastq/basecalled.fastq.gz
+  fi
+  """
 }
 
 /*
