@@ -48,6 +48,7 @@ params.guppy_model = false
 params.cpu_threads_per_caller = false
 params.num_callers = false
 params.config = false
+trim_barcodes = false
 
 ch_fast5 = Channel.fromPath( params.input )
 //options: qc
