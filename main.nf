@@ -80,7 +80,7 @@ if ( !params.skip_basecalling ) {
 
     """
     guppy_basecaller \\
-      --input_path $input_path \\
+      --input_path $dir_fast5 \\
       --save_path ./results-guppy_basecaller \\
       --recursive \\
       --records_per_fastq 0 \\
