@@ -95,16 +95,16 @@ if ( !params.skip_basecalling ) {
       --compress_fastq \\
 
     mkdir basecalled_fastq
-    cd results-guppy_basecaller
-    if [ "\$(find . type d -name "barcode*" )" != "" ]
+    cd results-guppy_basecaller/pass
+    if [ "\$(find . type -d -name "barcode*" )" != "" ]
     then
       for dir in barcode*/
       do
         dir=\${dir%*/}
-        cat \$dir/*.fastq.gz > ../basecalled_fastq/\$dir.fastq.gz
+        cat \$dir/*.fastq.gz > ../../basecalled_fastq/\$dir.fastq.gz
       done
     else
-      cat pass/*.fastq.gz > ../basecalled_fastq/basecalled.fastq.gz
+      cat *.fastq.gz > ../../basecalled_fastq/basecalled.fastq.gz
     fi
     """
   }
