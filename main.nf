@@ -33,6 +33,7 @@ ANSI_RESET = "\033[0m"
 
 //Options: mandatory
 params.input = false
+params.outdir = result
 
 // Options: guppy basecalling
 params.skip_basecalling = false
