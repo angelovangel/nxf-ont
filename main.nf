@@ -75,7 +75,7 @@ if ( !params.skip_basecalling ) {
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
-    cpu_threads_per_caller = params.flowcell ? "--cpu_threads_per_caller $params.cpu_threads_per_caller" : "--cpu_threads_per_caller 2"
+    cpu_threads_per_caller = params.cpu_threads_per_caller ? "--cpu_threads_per_caller $params.cpu_threads_per_caller" : "--cpu_threads_per_caller 2"
     num_callers = params.num_callers ? "--num_callers $params.num_callers" : "--num_callers 2"
 
     """
@@ -104,7 +104,7 @@ if ( !params.skip_basecalling ) {
         cat \$dir/*.fastq.gz > ../basecalled_fastq/\$dir.fastq.gz
       done
     else
-      cat *.fastq.gz > ../basecalled_fastq/basecalled.fastq.gz
+      cat pass/*.fastq.gz > ../basecalled_fastq/basecalled.fastq.gz
     fi
     """
   }
