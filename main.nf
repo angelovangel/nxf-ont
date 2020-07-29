@@ -96,7 +96,7 @@ if ( !params.skip_basecalling ) {
 
     mkdir basecalled_fastq
     cd results-guppy_basecaller/pass
-    if [ "\$(find . -type -d -name "barcode*" )" != "" ]
+    if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
       for dir in barcode*/
       do
