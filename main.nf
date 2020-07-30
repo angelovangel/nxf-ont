@@ -170,11 +170,12 @@ process rename_barcodes {
 
   script:
   """
-  while IFS=, read -r ob,nb
-  do
-    echo "$ob and $nb"
-    mv fastq/$ob.fastq.gz fastq/$nb.fastq.gz
-  done < $csv_file
+  echo $fastq_files
+  #while IFS=, read -r ob,nb
+  #do
+  #  echo "$ob and $nb"
+  #  mv fastq/$ob.fastq.gz fastq/$nb.fastq.gz
+  #done < $csv_file
   """
 }
 
