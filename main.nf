@@ -53,7 +53,7 @@ params.config = false
 params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
-ch_input_csv = Channel.fromPath( params.csv ).ifEmpty([])
+//ch_input_csv = Channel.fromPath( params.csv ).ifEmpty([])
 //options: qc
 
 
@@ -154,6 +154,7 @@ if ( !params.skip_basecalling ) {
   }
 }
 
+/*
 process rename_barcodes {
   publishDir path: "${params.outdir}", mode:'copy'
 
@@ -177,6 +178,7 @@ process rename_barcodes {
   """
 
 }
+*/
 
 /*
 guppy barcoder
