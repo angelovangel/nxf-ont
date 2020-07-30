@@ -82,7 +82,7 @@ if ( !params.skip_basecalling ) {
     """
     guppy_basecaller \\
       --input_path $dir_fast5 \\
-      --save_path ./results-guppy_basecaller \\
+      --save_path ./results-guppy-basecaller \\
       --recursive \\
       --records_per_fastq 0 \\
       $flowcell \\
@@ -96,7 +96,7 @@ if ( !params.skip_basecalling ) {
       --compress_fastq \\
 
     mkdir basecalled_fastq
-    cd results-guppy_basecaller/pass
+    cd results-guppy-basecaller/pass
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
       for dir in barcode*/
@@ -137,16 +137,16 @@ if ( !params.skip_basecalling ) {
       $work_threads \\
 
     mkdir barcode_fastq
-    cd results-guppy_barcoder
+    cd results-guppy-barcoder
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
       for dir in barcode*/
       do
         dir=\${dir%*/}
-        cat \$dir/*.fastq.gz > ../basecalled_fastq/\$dir.fastq.gz
+        cat \$dir/*.fastq.gz > ../barcode_fastq/\$dir.fastq.gz
       done
     else
-      cat *.fastq.gz > ../basecalled_fastq/basecalled.fastq.gz
+      cat *.fastq.gz > ../barcode_fastq/basecalled.fastq.gz
     fi
     """
   }
