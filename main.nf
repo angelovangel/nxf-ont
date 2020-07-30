@@ -114,13 +114,13 @@ if ( !params.skip_basecalling ) {
 } else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
   
   process guppy_barcoder {
-    publishDir path: "${params.outdir}", mode:'copy'
+    publishDir path: "${params.outdir}/barcodes", mode:'copy'
 
     input:
     file basecalled_files from ch_input_files
 
     output:
-    file "barcode_fastq/*.fastq.gz" into ch_fastq
+    file "fastq/*.fastq.gz" into ch_fastq
 
     script:
     //input_path = params.skip_basecalling ? params.input_path : basecalled_files
@@ -138,32 +138,32 @@ if ( !params.skip_basecalling ) {
       $trim_barcodes \\
       $work_threads \\
 
-    mkdir barcode_fastq
+    mkdir fastq
     cd results-guppy-barcoder
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
       for dir in barcode*/
       do
         dir=\${dir%*/}
-        cat \$dir/*.fastq.gz > ../barcode_fastq/\$dir.fastq.gz
+        cat \$dir/*.fastq.gz > ../fastq/\$dir.fastq.gz
       done
     else
-      cat *.fastq.gz > ../barcode_fastq/basecalled.fastq.gz
+      cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
     """
   }
 }
 
-/*
+
 process rename_barcodes {
-  publishDir path: "${params.outdir}", mode:'copy'
+  publishDir path: "${params.outdir}/barcodes", mode:'copy'
 
   input:
   file fastq_files from ch_fastq
   file csv_file from ch_input_csv
 
   output:
-  file "barcode_fastq/*.fastq.gz" into ch_fastq
+  file "fastq/*.fastq.gz" into ch_fastq
   
   when:
   !params.csv
@@ -173,12 +173,12 @@ process rename_barcodes {
   while IFS=, read -r ob,nb
   do
     echo "$ob and $nb"
-    mv 
+    mv fastq/$ob.fastq.gz fastq/$nb.fastq.gz
   done < $csv_file
   """
 
 }
-*/
+
 
 /*
 guppy barcoder
