@@ -39,7 +39,7 @@ params.outdir = "./results"
 params.skip_basecalling = false
 params.skip_demultiplexing = false
 
-params.input_path = false
+//params.input_path = false
 params.flowcell = false
 params.kit = false
 params.barcode_kits = false
@@ -109,7 +109,7 @@ if ( !params.skip_basecalling ) {
     fi
     """
   }
-} else if ( params.skip_basecalling && ! params.skip_demultiplexing && ! params.barcode_kits ) {
+} else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
   publishDir path: "${params.outdir}", mode:'copy'
 
   input:
