@@ -154,7 +154,7 @@ if ( !params.skip_basecalling ) {
   }
 }
 
-/*
+
 process rename_barcodes {
   publishDir path: "${params.outdir}/barcodes", mode:'copy'
 
@@ -177,7 +177,7 @@ process rename_barcodes {
   done < $csv_file
   """
 }
-*/
+
 
 
 /*
