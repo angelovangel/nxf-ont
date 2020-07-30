@@ -53,7 +53,7 @@ params.config = false
 params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
-//ch_input_csv = Channel.fromPath( params.csv )
+ch_input_csv = Channel.fromPath( params.csv ).ifEmpty([])
 //options: qc
 
 
@@ -159,7 +159,7 @@ process rename_barcodes {
 
   input:
   file fastq_files from ch_fastq
-  file csv_file from ch_input_fastq
+  file csv_file from ch_input_csv
 
   output:
   file "barcode_fastq/*.fastq.gz" into ch_fastq
