@@ -63,7 +63,7 @@ guppy basecalling
 if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
-    publishDir path: params.barcode_kits ? "${params.outdir}/barcode" : "${params.outdir}/basecalled", mode:'copy'
+    publishDir path: "${params.outdir}/barcode", mode:'copy'
 
     input:
     file dir_fast5 from ch_input_files
