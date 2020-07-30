@@ -34,6 +34,7 @@ ANSI_RESET = "\033[0m"
 //Options: mandatory
 params.input = false
 params.outdir = "./results"
+params.csv = false
 
 // Options: guppy basecalling
 params.skip_basecalling = false
@@ -44,7 +45,7 @@ params.flowcell = false
 params.kit = false
 params.barcode_kits = false
 params.guppy_config = false
-params.guppy_model = false
+//params.guppy_model = false
 
 params.cpu_threads_per_caller = false
 params.num_callers = false
@@ -52,6 +53,7 @@ params.config = false
 params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
+ch_input_csv = Channel.fromPath( params.csv )
 //options: qc
 
 
@@ -61,18 +63,18 @@ guppy basecalling
 if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
-    publishDir path: "${params.outdir}", mode:'copy'
+    publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy'
 
     input:
     file dir_fast5 from ch_input_files
 
     output:
-    file "basecalled_fastq/*.fastq.gz" into ch_fastq
+    file "fastq/*.fastq.gz" into ch_fastq
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
     kit = params.kit ? "--kits $params.kit" : ""
-    barcode_kits = params.barcode_kits && !params.skip_demultiplexing ? "--barcode_kits $params.barcode_kits" : ""
+    barcode_kits = params.barcode_kits ? "--barcode_kits $params.barcode_kits" : ""
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
@@ -95,17 +97,17 @@ if ( !params.skip_basecalling ) {
       $config \\
       --compress_fastq \\
 
-    mkdir basecalled_fastq
+    mkdir fastq
     cd results-guppy-basecaller/pass
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
       for dir in barcode*/
       do
         dir=\${dir%*/}
-        cat \$dir/*.fastq.gz > ../../basecalled_fastq/\$dir.fastq.gz
+        cat \$dir/*.fastq.gz > ../../fastq/\$dir.fastq.gz
       done
     else
-      cat *.fastq.gz > ../../basecalled_fastq/basecalled.fastq.gz
+      cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
     fi
     """
   }
@@ -150,6 +152,30 @@ if ( !params.skip_basecalling ) {
     fi
     """
   }
+}
+
+process rename_barcodes {
+  publishDir path: "${params.outdir}", mode:'copy'
+
+  input:
+  file fastq_files from ch_fastq
+  file csv_file from ch_input_fastq
+
+  output:
+  file "barcode_fastq/*.fastq.gz" into ch_fastq
+  
+  when:
+  !params.csv
+
+  script:
+  """
+  while IFS=, read -r ob,nb
+  do
+    echo "$ob and $nb"
+    mv 
+  done < $csv_file
+  """
+
 }
 
 /*
