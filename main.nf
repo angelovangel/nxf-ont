@@ -163,7 +163,7 @@ process rename_barcodes {
   file csv_file from ch_input_csv
 
   output:
-  file "fastq/*.fastq.gz" into ch_fastq
+  file "fastq/*.fastq.gz" into ch_renamed_fastq
   
   when:
   !params.csv
