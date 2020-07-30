@@ -51,7 +51,7 @@ params.num_callers = false
 params.config = false
 params.trim_barcodes = false
 
-ch_fast5 = Channel.fromPath( params.input )
+ch_input_files = Channel.fromPath( params.input )
 //options: qc
 
 
@@ -64,7 +64,7 @@ if ( !params.skip_basecalling ) {
     publishDir path: "${params.outdir}", mode:'copy'
 
     input:
-    file dir_fast5 from ch_fast5
+    file dir_fast5 from ch_input_files
 
     output:
     file "basecalled_fastq/*.fastq.gz" into ch_fastq
@@ -109,18 +109,19 @@ if ( !params.skip_basecalling ) {
     fi
     """
   }
-} else if ( params.skip_basecalling && ! params.skip_demultiplexing) {
+} else if ( params.skip_basecalling && ! params.skip_demultiplexing && ! params.barcode_kits ) {
   publishDir path: "${params.outdir}", mode:'copy'
 
   input:
-  file basecalled_files from ch_fastq.ifEmpty([])
+  file basecalled_files from ch_input_files
 
   output:
-  file "barcode_fastq/*.fastq" into ch_barcode_fastq
+  file "barcode_fastq/*.fastq.gz" into ch_fastq
 
   script:
-  input_path = params.skip_basecalling ? params.input_path : basecalled_files
+  //input_path = params.skip_basecalling ? params.input_path : basecalled_files
   trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
+  work_threads = params.cpus ? "--work_threads $params.cpus" : "--work_threads 4"
 
   """
   guppy_barcoder \\
@@ -131,11 +132,11 @@ if ( !params.skip_basecalling ) {
     --compress_fastq \\
     --barcode_kits $params.barcode_kits \\
     $trim_barcodes \\
-    --work_threads 100 \\
+    $work_threads \\
 
   mkdir barcode_fastq
   cd results-guppy_barcoder
-  if [ "\$(find . type d -name "barcode*" )" != "" ]
+  if [ "\$(find . -type d -name "barcode*" )" != "" ]
   then
     for dir in barcode*/
     do
