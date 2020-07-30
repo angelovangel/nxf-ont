@@ -154,7 +154,7 @@ if ( !params.skip_basecalling ) {
   }
 }
 
-
+/*
 process rename_barcodes {
   publishDir path: "${params.outdir}/barcodes", mode:'copy'
 
@@ -176,8 +176,8 @@ process rename_barcodes {
     mv fastq/$ob.fastq.gz fastq/$nb.fastq.gz
   done < $csv_file
   """
-
 }
+*/
 
 
 /*
