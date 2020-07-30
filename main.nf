@@ -110,43 +110,46 @@ if ( !params.skip_basecalling ) {
     """
   }
 } else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
-  publishDir path: "${params.outdir}", mode:'copy'
+  
+  process guppy_barcoder {
+    publishDir path: "${params.outdir}", mode:'copy'
 
-  input:
-  file basecalled_files from ch_input_files
+    input:
+    file basecalled_files from ch_input_files
 
-  output:
-  file "barcode_fastq/*.fastq.gz" into ch_fastq
+    output:
+    file "barcode_fastq/*.fastq.gz" into ch_fastq
 
-  script:
-  //input_path = params.skip_basecalling ? params.input_path : basecalled_files
-  trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
-  work_threads = params.cpus ? "--work_threads $params.cpus" : "--work_threads 4"
+    script:
+    //input_path = params.skip_basecalling ? params.input_path : basecalled_files
+    trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
+    work_threads = params.cpus ? "--work_threads $params.cpus" : "--work_threads 4"
 
-  """
-  guppy_barcoder \\
-    --input_path $basecalled_files \\
-    --save_path ./results-guppy-barcoder \\
-    --recursive \\
-    --records_per_fastq 0 \\
-    --compress_fastq \\
-    --barcode_kits $params.barcode_kits \\
-    $trim_barcodes \\
-    $work_threads \\
+    """
+    guppy_barcoder \\
+      --input_path $basecalled_files \\
+      --save_path ./results-guppy-barcoder \\
+      --recursive \\
+      --records_per_fastq 0 \\
+      --compress_fastq \\
+      --barcode_kits $params.barcode_kits \\
+      $trim_barcodes \\
+      $work_threads \\
 
-  mkdir barcode_fastq
-  cd results-guppy_barcoder
-  if [ "\$(find . -type d -name "barcode*" )" != "" ]
-  then
-    for dir in barcode*/
-    do
-      dir=\${dir%*/}
-      cat \$dir/*.fastq.gz > ../basecalled_fastq/\$dir.fastq.gz
-    done
-  else
-    cat *.fastq.gz > ../basecalled_fastq/basecalled.fastq.gz
-  fi
-  """
+    mkdir barcode_fastq
+    cd results-guppy_barcoder
+    if [ "\$(find . -type d -name "barcode*" )" != "" ]
+    then
+      for dir in barcode*/
+      do
+        dir=\${dir%*/}
+        cat \$dir/*.fastq.gz > ../basecalled_fastq/\$dir.fastq.gz
+      done
+    else
+      cat *.fastq.gz > ../basecalled_fastq/basecalled.fastq.gz
+    fi
+    """
+  }
 }
 
 /*
