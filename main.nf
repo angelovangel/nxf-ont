@@ -53,7 +53,7 @@ params.config = false
 params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
-ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
+//ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
 
 /*if ( params.csv ) { 
   ch_input_csv = file(params.csv, checkIfExists: true) 
@@ -75,7 +75,7 @@ if ( !params.skip_basecalling ) {
 
     input:
     file dir_fast5 from ch_input_files
-    file csv_file from ch_input_csv
+    //file csv_file from ch_input_csv
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
