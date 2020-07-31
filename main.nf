@@ -121,6 +121,7 @@ if ( !params.skip_basecalling ) {
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
+    file csv_file from ch_input_csv
 
     script:
     //input_path = params.skip_basecalling ? params.input_path : basecalled_files
@@ -150,11 +151,20 @@ if ( !params.skip_basecalling ) {
     else
       cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
+
+    if [params.csv] 
+    then
+      while IFS=, read -r ob nb
+      do
+        mv ../fastq/\$ob.fastq.gz ../fastq/\$nb.fastq.gz
+      done < $csv_file
+    fi
     """
   }
 }
 
 
+/*
 process rename_barcodes {
   publishDir path: "${params.outdir}/rename_barcodes", mode:'copy'
 
@@ -177,6 +187,7 @@ process rename_barcodes {
   done < $csv_file
   """
 }
+*/
 
 
 
