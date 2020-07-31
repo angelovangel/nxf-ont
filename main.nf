@@ -164,6 +164,7 @@ if ( !params.skip_basecalling ) {
     else
       cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
+    """
   }
 }
 
@@ -182,14 +183,6 @@ process rename_barcodes {
   when:
   params.csv
 
-  script:
-  """
-  //while IFS=, read -r ob nb
-  //do
-  //  echo $fastq_files >> test.txt
-  //  echo "\$ob and \$nb" >> test.txt
-  //done < $csv_file
-  """
 }
 */
 
