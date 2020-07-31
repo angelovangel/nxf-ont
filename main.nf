@@ -60,7 +60,7 @@ ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) 
 /*
 guppy basecalling
 */
-//if ( !params.skip_basecalling ) {
+if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
     publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy'
@@ -114,7 +114,7 @@ guppy basecalling
     fi
     """
   }
-//} else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
+} else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
   
   process guppy_barcoder {
     publishDir path: "${params.outdir}/barcodes", mode:'copy'
@@ -158,7 +158,7 @@ guppy basecalling
     fi
     """
   }
-//}
+}
 
 
 process rename_barcodes {
@@ -171,8 +171,8 @@ process rename_barcodes {
   output:
   file "test.txt" into ch_renamed_fastq
   
-  when:
-  !params.csv
+  //when:
+  //!params.csv
 
   script:
   """
