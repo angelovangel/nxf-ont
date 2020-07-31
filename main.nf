@@ -75,7 +75,7 @@ if ( !params.skip_basecalling ) {
 
     input:
     file dir_fast5 from ch_input_files
-    //file csv_file from ch_input_csv
+    params.csv ? file csv_file from ch_input_csv : ""
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
@@ -124,7 +124,7 @@ if ( !params.skip_basecalling ) {
       while IFS=, read -r ob nb
       do
         mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
-      done < ../../$params.csv
+      done < ../../$csv_file
     fi
     """
   }
