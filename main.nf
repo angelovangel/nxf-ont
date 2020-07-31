@@ -176,7 +176,7 @@ process rename_barcodes {
 
   script:
   """
-  while IFS=, read -r ob,nb
+  while IFS=, read -r ob nb
   do
     echo "\$ob and \$nb" > test.txt
   done < $csv_file
