@@ -110,6 +110,8 @@ if ( !params.skip_basecalling ) {
     else
       cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
     fi
+
+    cat $csv_file > test.txt
     while IFS=, read -r ob nb
     do
       mv ../fastq/\$ob.fastq.gz ../fastq/\$nb.fastq.gz
