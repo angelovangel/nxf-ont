@@ -60,7 +60,7 @@ ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) 
 /*
 guppy basecalling
 */
-if ( !params.skip_basecalling ) {
+if ( params.skip_basecalling ) {
   
   process guppy_basecaller {
     publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy'
