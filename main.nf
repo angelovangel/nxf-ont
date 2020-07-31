@@ -178,7 +178,7 @@ process rename_barcodes {
   """
   while IFS=, read -r ob,nb
   do
-    echo "$ob and $nb" > test.txt
+    echo "\$ob and \$nb" > test.txt
   done < $csv_file
   """
 }
