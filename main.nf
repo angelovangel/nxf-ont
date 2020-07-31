@@ -118,11 +118,14 @@ if ( !params.skip_basecalling ) {
     else
       cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
     fi
-
-    while IFS=, read -r ob nb
-    do
-      mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
-    done < ../../$csv_file
+    
+    if [ $params.csv ]
+    then
+      while IFS=, read -r ob nb
+      do
+        mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
+      done < ../../$csv_file
+    fi
     """
   }
 } else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
