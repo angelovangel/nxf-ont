@@ -166,7 +166,7 @@ process rename_barcodes {
   file "test.txt" into ch_renamed_fastq
   
   when:
-  !params.csv
+  params.csv
 
   script:
   """
