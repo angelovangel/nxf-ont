@@ -152,13 +152,13 @@ if ( !params.skip_basecalling ) {
       cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
 
-    if [ ${params.csv} ] 
-    then
+    #if [ ${params.csv} ] 
+    #then
       while IFS=, read -r ob nb
       do
         mv ../fastq/\$ob.fastq.gz ../fastq/\$nb.fastq.gz
       done < $csv_file
-    fi
+    #fi
     """
   }
 }
