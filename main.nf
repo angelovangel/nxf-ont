@@ -124,7 +124,7 @@ if ( !params.skip_basecalling ) {
       while IFS=, read -r ob nb
       do
         mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
-      done < ../../$csv_file
+      done < ../../$params.csv
     fi
     """
   }
