@@ -159,7 +159,7 @@ process rename_barcodes {
   publishDir path: "${params.outdir}/rename_barcodes", mode:'copy'
 
   input:
-  //file fastq_files from ch_fastq
+  file fastq_files from ch_fastq
   file csv_file from ch_input_csv
 
   output:
@@ -172,7 +172,7 @@ process rename_barcodes {
   """
   while IFS=, read -r ob nb
   do
-    #echo fastq_files >> test.txt
+    echo $fastq_files >> test.txt
     echo "\$ob and \$nb" >> test.txt
   done < $csv_file
   """
