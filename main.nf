@@ -53,12 +53,14 @@ params.config = false
 params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
-//ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
-if ( params.csv ) { 
+ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
+
+/*if ( params.csv ) { 
   ch_input_csv = file(params.csv, checkIfExists: true) 
 } else { 
   exit 1, "Samplesheet file not specified!" 
 }
+*/
 //ch_input_csv = Channel.fromPath( params.csv )
 //options: qc
 
