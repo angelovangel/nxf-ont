@@ -54,7 +54,7 @@ params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
 //ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
-if (params.csv) { 
+if ( params.csv ) { 
   ch_input_csv = file(params.csv, checkIfExists: true) 
 } else { 
   exit 1, "Samplesheet file not specified!" 
@@ -117,11 +117,10 @@ if ( !params.skip_basecalling ) {
       cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
     fi
 
-    cat $csv_file > test.txt
     while IFS=, read -r ob nb
     do
       mv ../fastq/\$ob.fastq.gz ../fastq/\$nb.fastq.gz
-    done < $csv_file
+    done < ../../$csv_file
     """
   }
 } else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
