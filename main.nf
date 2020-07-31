@@ -165,20 +165,21 @@ process rename_barcodes {
   publishDir path: "${params.outdir}/rename_barcodes", mode:'copy'
 
   input:
-  //file fastq_files from ch_fastq
+  file fastq_files from ch_fastq
   file csv_file from ch_input_csv
 
   output:
   file "test.txt" into ch_renamed_fastq
   
-  //when:
-  //!params.csv
+  when:
+  !params.csv
 
   script:
   """
   while IFS=, read -r ob nb
   do
-    echo "\$ob and \$nb" > test.txt
+    echo fastq_files >> test.txt
+    echo "\$ob and \$nb" >> test.txt
   done < $csv_file
   """
 }
