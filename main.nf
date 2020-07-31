@@ -67,6 +67,7 @@ if ( !params.skip_basecalling ) {
 
     input:
     file dir_fast5 from ch_input_files
+    file csv_file from ch_input_csv
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
@@ -109,6 +110,10 @@ if ( !params.skip_basecalling ) {
     else
       cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
     fi
+    while IFS=, read -r ob nb
+    do
+      mv ../fastq/\$ob.fastq.gz ../fastq/\$nb.fastq.gz
+    done < $csv_file
     """
   }
 } else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
