@@ -54,7 +54,12 @@ params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
 //ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
-ch_input_csv = Channel.fromPath( params.csv )
+if (params.csv) { 
+  ch_input_csv = file(params.csv, checkIfExists: true) 
+} else { 
+  exit 1, "Samplesheet file not specified!" 
+}
+//ch_input_csv = Channel.fromPath( params.csv )
 //options: qc
 
 
@@ -147,7 +152,6 @@ if ( !params.skip_basecalling ) {
       $trim_barcodes \\
       $work_threads \\
 
-    mkdir fastq1
     mkdir fastq
     cd results-guppy-barcoder
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
@@ -155,20 +159,11 @@ if ( !params.skip_basecalling ) {
       for dir in barcode*/
       do
         dir=\${dir%*/}
-        cat \$dir/*.fastq.gz > ../fastq1/\$dir.fastq.gz
+        cat \$dir/*.fastq.gz > ../fastq/\$dir.fastq.gz
       done
     else
-      cat *.fastq.gz > ../fastq1/unclassified.fastq.gz
+      cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
-
-    #if [ ${params.csv} ] 
-    #then
-      while IFS=, read -r ob nb
-      do
-        mv ../fastq1/\$ob.fastq.gz ../fastq/\$nb.fastq.gz
-      done < $csv_file
-    #fi
-    """
   }
 }
 
