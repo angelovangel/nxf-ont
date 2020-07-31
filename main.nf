@@ -75,7 +75,7 @@ if ( !params.skip_basecalling ) {
 
     input:
     file dir_fast5 from ch_input_files
-    //file csv_file from ch_input_csv
+    file csv_file from ch_input_csv
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
