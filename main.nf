@@ -71,9 +71,6 @@ if ( !params.skip_basecalling ) {
     output:
     file "fastq/*.fastq.gz" into ch_fastq
 
-    when:
-    !params.skip_basecalling
-
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
     kit = params.kit ? "--kits $params.kit" : ""
@@ -125,9 +122,6 @@ if ( !params.skip_basecalling ) {
     output:
     file "fastq/*.fastq.gz" into ch_fastq
 
-    when:
-    params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits
-
     script:
     //input_path = params.skip_basecalling ? params.input_path : basecalled_files
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
@@ -165,7 +159,7 @@ process rename_barcodes {
   publishDir path: "${params.outdir}/rename_barcodes", mode:'copy'
 
   input:
-  file fastq_files from ch_fastq
+  //file fastq_files from ch_fastq
   file csv_file from ch_input_csv
 
   output:
