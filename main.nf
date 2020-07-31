@@ -156,26 +156,24 @@ if ( !params.skip_basecalling ) {
 
 
 process rename_barcodes {
-  publishDir path: "${params.outdir}/barcodes", mode:'copy'
+  publishDir path: "${params.outdir}/rename_barcodes", mode:'copy'
 
   input:
-  file fastq_files from ch_fastq
+  //file fastq_files from ch_fastq
   file csv_file from ch_input_csv
 
   output:
-  file "fastq/*.fastq.gz" into ch_renamed_fastq
+  file "test.txt" into ch_renamed_fastq
   
   when:
   !params.csv
 
   script:
   """
-  echo $fastq_files
-  #while IFS=, read -r ob,nb
-  #do
-  #  echo "$ob and $nb"
-  #  mv fastq/$ob.fastq.gz fastq/$nb.fastq.gz
-  #done < $csv_file
+  while IFS=, read -r ob,nb
+  do
+    echo "$ob and $nb" > test.txt
+  done < $csv_file
   """
 }
 
