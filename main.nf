@@ -83,7 +83,7 @@ if ( !params.skip_basecalling ) {
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
     kit = params.kit ? "--kits $params.kit" : ""
-    barcode_kits = params.barcode_kits ? "--barcode_kits $params.barcode_kits" : false
+    barcode_kits = params.barcode_kits ? "--barcode_kits $params.barcode_kits" : ""
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
@@ -119,6 +119,9 @@ if ( !params.skip_basecalling ) {
       cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
     fi
     
+    echo $params.csv >> test.txt
+    echo $params.barcode_kits >> test.txt
+
     if $params.csv && $params.barcode_kits
     then
       while IFS=, read -r ob nb
