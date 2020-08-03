@@ -53,7 +53,7 @@ params.config = false
 params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
-ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
+ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ).into(ch_input_csv_basecaller,ch_input_csv_barcoder) : Channel.empty()
 
 /*if ( params.csv ) { 
   ch_input_csv = file(params.csv, checkIfExists: true) 
@@ -75,7 +75,7 @@ guppy basecalling
 
     input:
     file dir_fast5 from ch_input_files
-    file csv_file from ch_input_csv.ifEmpty([])
+    file csv_file from ch_input_csv_basecaller.ifEmpty([])
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
@@ -141,7 +141,7 @@ guppy basecalling
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
-    file csv_file from ch_input_csv.ifEmpty([])
+    file csv_file from ch_input_csv_barcoder.ifEmpty([])
 
     when:
     params.skip_basecalling == true && params.skip_demultiplexing == false && params.barcode_kits == true
