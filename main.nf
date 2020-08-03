@@ -122,7 +122,7 @@ if ( !params.skip_basecalling ) {
     echo $params.csv >> test.txt
     echo $params.barcode_kits >> test.txt
 
-    if [ ! -z $params.csv ] && [ ! -z $params.barcode_kits ]
+    if [ ! -z $params.csv ] && [ ! -z $barcode_kits ]
     then
       while IFS=, read -r ob nb
       do
