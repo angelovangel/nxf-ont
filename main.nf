@@ -119,7 +119,7 @@ if ( !params.skip_basecalling ) {
       cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
     fi
     
-    if [ $params.csv ] && [ $params.barcode_kits ]
+    if $params.csv && $params.barcode_kits
     then
       while IFS=, read -r ob nb
       do
@@ -169,7 +169,7 @@ if ( !params.skip_basecalling ) {
       cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
 
-    if [ $params.csv ] && [ $params.barcode_kits ]
+    if $params.csv && $params.barcode_kits
     then
       while IFS=, read -r ob nb
       do
