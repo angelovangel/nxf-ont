@@ -181,7 +181,7 @@ if ( !params.skip_basecalling ) {
 }
 
 process porechop {
-  publishDir path: "${params.outdir}/barcodes", mode:'copy'
+  publishDir path: "${params.outdir}/porechop", mode:'copy'
 
   conda 'porechop.yml'
 
@@ -191,10 +191,10 @@ process porechop {
   output:
   file porechop into ch_porechop
 
-  script:
-  """
+  
+  '''
   porechop -i $fastq_files -o porechop
-  """
+  '''
 }
 
 
