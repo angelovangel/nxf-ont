@@ -83,7 +83,7 @@ if ( !params.skip_basecalling ) {
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
     kit = params.kit ? "--kits $params.kit" : ""
-    barcode_kits = params.barcode_kits ? "--barcode_kits $params.barcode_kits" : ""
+    barcode_kits = params.barcode_kits ? "--barcode_kits $params.barcode_kits" : false
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
