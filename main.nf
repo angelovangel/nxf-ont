@@ -39,6 +39,7 @@ params.csv = false
 // Options: guppy basecalling
 params.skip_basecalling = false
 params.skip_demultiplexing = false
+params.skip_porechop = false
 
 //params.input_path = false
 params.flowcell = false
@@ -191,6 +192,9 @@ process porechop {
 
   output:
   file "trimmed*.fastq.gz" into ch_porechop
+
+  when:
+  !skip_porechop
 
   script:
   """
