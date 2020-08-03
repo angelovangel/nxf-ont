@@ -164,18 +164,18 @@ if ( !params.skip_basecalling ) {
       for dir in barcode*/
       do
         dir=\${dir%*/}
-        cat \$dir/*.fastq.gz > ../../fastq/\$dir.fastq.gz
+        cat \$dir/*.fastq.gz > ../fastq/\$dir.fastq.gz
       done
     else
-      cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
+      cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
 
     if [ ! -z "$params.csv" ]
     then
       while IFS=, read -r ob nb
       do
-        mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
-      done < ../../$csv_file
+        mv ../fastq/\$ob.fastq.gz ../fastq/\$nb.fastq.gz
+      done < ../$csv_file
     fi
     """
   }
