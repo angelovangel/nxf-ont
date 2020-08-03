@@ -53,7 +53,8 @@ params.config = false
 params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
-ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ).into(ch_input_csv_basecaller,ch_input_csv_barcoder) : Channel.empty()
+ch_input_csv_basecaller = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
+ch_input_csv_barcoder = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
 
 /*if ( params.csv ) { 
   ch_input_csv = file(params.csv, checkIfExists: true) 
