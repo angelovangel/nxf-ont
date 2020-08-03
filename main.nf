@@ -118,9 +118,6 @@ if ( !params.skip_basecalling ) {
     else
       cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
     fi
-    
-    echo $params.csv >> test.txt
-    echo $params.barcode_kits >> test.txt
 
     if [ ! -z $params.csv ] && [ ! -z $barcode_kits ]
     then
@@ -172,7 +169,7 @@ if ( !params.skip_basecalling ) {
       cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
 
-    if $params.csv && $params.barcode_kits
+    if [ ! -z $params.csv ] && [ ! -z $barcode_kits ]
     then
       while IFS=, read -r ob nb
       do
@@ -181,6 +178,21 @@ if ( !params.skip_basecalling ) {
     fi
     """
   }
+}
+
+process porechop {
+  publishDir path: "${params.outdir}/barcodes", mode:'copy'
+
+  conda 'porechop.yml'
+
+  input:
+  file fastq_files from ch_fastq
+
+  output:
+  file porechop into ch_porechop
+
+  script:
+  porechop -i $fastq_files -o porechop
 }
 
 
