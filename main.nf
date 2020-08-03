@@ -192,9 +192,9 @@ process porechop {
   file porechop into ch_porechop
 
   
-  """
+  '''
   porechop -i $fastq_files -o porechop
-  """
+  '''
 }
 
 
