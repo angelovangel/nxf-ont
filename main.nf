@@ -144,7 +144,7 @@ if ( !params.skip_basecalling ) {
     script:
     //input_path = params.skip_basecalling ? params.input_path : basecalled_files
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
-    work_threads = params.cpus ? "--work_threads $params.cpus" : "--work_threads 4"
+    worker_threads = params.cpus ? "--worker_threads $params.cpus" : "--worker_threads 4"
 
     """
     guppy_barcoder \\
@@ -155,7 +155,7 @@ if ( !params.skip_basecalling ) {
       --compress_fastq \\
       --barcode_kits $params.barcode_kits \\
       $trim_barcodes \\
-      $work_threads \\
+      $worker_threads \\
 
     mkdir fastq
     cd results-guppy-barcoder
