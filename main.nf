@@ -190,13 +190,13 @@ process porechop {
   file fastq_file from ch_fastq.flatten()
 
   output:
-  file "porechop/*.fastq.gz" into ch_porechop
+  file "trimmed*.fastq.gz" into ch_porechop
 
   script:
   """
   #for f in $fastq_file
   #do
-    porechop -i $fastq_file -o porechop/trimmed_$fastq_file -t 100
+    porechop -i $fastq_file -o trimmed_$fastq_file -t 100
   #done
   """
 }
