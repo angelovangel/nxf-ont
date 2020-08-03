@@ -140,7 +140,6 @@ if ( !params.skip_basecalling ) {
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
-    file csv_file from ch_input_csv.ifEmpty([])
 
     script:
     //input_path = params.skip_basecalling ? params.input_path : basecalled_files
