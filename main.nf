@@ -53,8 +53,7 @@ params.config = false
 params.trim_barcodes = false
 
 ch_input_files = Channel.fromPath( params.input )
-ch_input_csv_basecaller = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
-ch_input_csv_barcoder = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
+ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
 
 /*if ( params.csv ) { 
   ch_input_csv = file(params.csv, checkIfExists: true) 
@@ -69,20 +68,17 @@ ch_input_csv_barcoder = params.csv ? Channel.fromPath( params.csv, checkIfExists
 /*
 guppy basecalling
 */
-//if ( !params.skip_basecalling ) {
+if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
     publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy'
 
     input:
     file dir_fast5 from ch_input_files
-    file csv_file from ch_input_csv_basecaller.ifEmpty([])
+    file csv_file from ch_input_csv.ifEmpty([])
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
-
-    when:
-    param.skip_basecalling == false
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
@@ -132,7 +128,7 @@ guppy basecalling
     fi
     """
   }
-//} else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
+} else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
   
   process guppy_barcoder {
     publishDir path: "${params.outdir}/barcodes", mode:'copy'
@@ -142,10 +138,7 @@ guppy basecalling
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
-    file csv_file from ch_input_csv_barcoder.ifEmpty([])
-
-    when:
-    params.skip_basecalling == true && params.skip_demultiplexing == false && params.barcode_kits == true
+    file csv_file from ch_input_csv.ifEmpty([])
 
     script:
     //input_path = params.skip_basecalling ? params.input_path : basecalled_files
@@ -185,7 +178,7 @@ guppy basecalling
     fi
     """
   }
-//}
+}
 
 
 /*
