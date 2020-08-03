@@ -170,7 +170,7 @@ if ( !params.skip_basecalling ) {
       cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
 
-    if [ ! -z $params.csv ] && [ ! -z $barcode_kits ]
+    if [ ! -z "$params.csv" ] && [ ! -z "$barcode_kits" ]
     then
       while IFS=, read -r ob nb
       do
@@ -198,10 +198,7 @@ process porechop {
 
   script:
   """
-  #for f in $fastq_file
-  #do
-    porechop -i $fastq_file -o trimmed_$fastq_file -t 100
-  #done
+  porechop -i $fastq_file -o trimmed_$fastq_file -t 100
   """
 }
 
