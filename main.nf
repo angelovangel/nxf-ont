@@ -78,7 +78,7 @@ if ( !params.skip_basecalling ) {
     file csv_file from ch_input_csv.ifEmpty([])
 
     output:
-    file "fastq/*.fastq.gz" into ch_fastq
+    file "*.fastq.gz" into ch_fastq
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
@@ -180,6 +180,7 @@ if ( !params.skip_basecalling ) {
   }
 }
 
+/*
 process porechop {
   publishDir path: "${params.outdir}/porechop", mode:'copy'
 
@@ -199,7 +200,7 @@ process porechop {
   done
   """
 }
-
+*/
 
 /*
 process rename_barcodes {
