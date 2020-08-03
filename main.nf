@@ -136,6 +136,7 @@ if ( !params.skip_basecalling ) {
 
     input:
     file basecalled_files from ch_input_files
+    file csv_file from ch_input_csv.ifEmpty([])
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
