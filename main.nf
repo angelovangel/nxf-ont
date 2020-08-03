@@ -194,7 +194,7 @@ process porechop {
   file "trimmed*.fastq.gz" into ch_porechop
 
   when:
-  !skip_porechop
+  !params.skip_porechop
 
   script:
   """
