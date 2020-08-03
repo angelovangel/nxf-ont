@@ -44,7 +44,7 @@ params.skip_demultiplexing = false
 params.flowcell = false
 params.kit = false
 params.barcode_kits = false
-params.guppy_config = false
+//params.guppy_config = false
 //params.guppy_model = false
 
 params.cpu_threads_per_caller = false
@@ -68,7 +68,7 @@ ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) 
 /*
 guppy basecalling
 */
-if ( !params.skip_basecalling ) {
+//if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
     publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy'
@@ -79,6 +79,9 @@ if ( !params.skip_basecalling ) {
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
+
+    when:
+    param.skip_basecalling == false
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
@@ -128,7 +131,7 @@ if ( !params.skip_basecalling ) {
     fi
     """
   }
-} else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
+//} else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
   
   process guppy_barcoder {
     publishDir path: "${params.outdir}/barcodes", mode:'copy'
@@ -139,6 +142,9 @@ if ( !params.skip_basecalling ) {
     output:
     file "fastq/*.fastq.gz" into ch_fastq
     file csv_file from ch_input_csv.ifEmpty([])
+
+    when:
+    params.skip_basecalling == true && params.skip_demultiplexing == false && params.barcode_kits == true
 
     script:
     //input_path = params.skip_basecalling ? params.input_path : basecalled_files
@@ -168,9 +174,17 @@ if ( !params.skip_basecalling ) {
     else
       cat *.fastq.gz > ../fastq/unclassified.fastq.gz
     fi
+
+    if [ $params.csv ]
+    then
+      while IFS=, read -r ob nb
+      do
+        mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
+      done < ../../$csv_file
+    fi
     """
   }
-}
+//}
 
 
 /*
