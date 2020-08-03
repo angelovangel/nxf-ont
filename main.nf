@@ -196,7 +196,7 @@ process porechop {
   """
   #for f in $fastq_files
   #do
-    porechop -i \$fastq_file -o porechop/trimmed_\$fastq_file
+    porechop -i $fastq_file -o porechop/trimmed_$fastq_file
   #done
   """
 }
