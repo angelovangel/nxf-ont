@@ -189,11 +189,13 @@ process porechop {
   file fastq_files from ch_fastq
 
   output:
-  file porechop into ch_porechop
+  file "porechop/*.fastq.gz" into ch_porechop
 
   script:
   """
-  porechop -i $fastq_files -o porechop
+  for f in $fastq_files
+  do
+    porechop -i $f -o porechop/trimmed_$f
   """
 }
 
