@@ -222,15 +222,15 @@ process pycoqc {
   publishDir path: "${params.outdir}/pycoqc", mode:'copy'
   
   input:
-  file $summary_file from ch_summary_guppy
+  file summary_file from ch_summary_guppy
 
   output:
   file "pycoQC.html"
 
   script:
   """
-  pycoQC -f $summary_file \\
-    -o pycoQC.html
+  pycoQC --summary_file $summary_file \\
+    --html_outfile pycoQC.html
   """
 }
 
