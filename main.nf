@@ -83,7 +83,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
     file "rename.log" into ch_log_rename
-    file "results-guppy-basecaller/*.txt" into ch_summary_guppy
+    file "*.txt" into ch_summary_guppy
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
@@ -231,6 +231,21 @@ process pycoqc {
   """
   pycoQC --summary_file $summary_file \\
     --html_outfile pycoQC.html
+  """
+}
+
+process seqkit {
+  publishDir path: "${params.outdir}/seqkit", mode:'copy'
+
+  input:
+  file fastq_file from !params.skip_porechop ? ch_porechop : ch_fastq
+
+  output:
+  file "*.*"
+
+  script:
+  """
+  seqkit stats $fastq_file > seqkit.txt
   """
 }
 
