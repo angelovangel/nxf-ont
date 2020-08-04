@@ -238,7 +238,7 @@ process seqkit {
   publishDir path: "${params.outdir}/seqkit", mode:'copy'
 
   input:
-  file fastq_file from !params.skip_porechop ? ch_porechop : ch_fastq
+  file fastq_file from !params.skip_porechop ? ch_porechop.collect() : ch_fastq.collect()
 
   output:
   file "*.*"
