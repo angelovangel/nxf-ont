@@ -83,7 +83,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
     file "rename.log" into ch_log_rename
-    file "*.txt" into ch_summary_guppy
+    file "results-guppy-basecaller/*.txt" into ch_summary_guppy
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
