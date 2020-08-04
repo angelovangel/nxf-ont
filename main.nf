@@ -188,14 +188,14 @@ process porechop {
 
   output:
   file "trimmed*.fastq.gz" into ch_porechop
-  file "logs/*.log" into ch_l_porechop
+  file "logs/*.txt" into ch_l_porechop
 
   when:
   !params.skip_porechop
 
   script:
   """
-  porechop -i $fastq_file -o trimmed_$fastq_file -t 100 > logs/$fastq_file.log
+  porechop -i $fastq_file -o trimmed_$fastq_file -t 100 > logs/$fastq_file.txt
   """
 }
 
