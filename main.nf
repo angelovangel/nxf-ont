@@ -48,6 +48,7 @@ params.barcode_kits = false
 //params.guppy_config = false
 //params.guppy_model = false
 
+params.cpus = false
 params.cpu_threads_per_caller = false
 params.num_callers = false
 params.config = false
@@ -88,8 +89,9 @@ if ( !params.skip_basecalling ) {
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
-    cpu_threads_per_caller = params.cpu_threads_per_caller ? "--cpu_threads_per_caller $params.cpu_threads_per_caller" : "--cpu_threads_per_caller 2"
-    num_callers = params.num_callers ? "--num_callers $params.num_callers" : "--num_callers 2"
+    cpu_threads_per_caller = params.cpu_threads_per_caller ? "--cpu_threads_per_caller $params.cpu_threads_per_caller" 
+                              : params.cpus ?  "--cpu_threads_per_caller $params.cpus" "--cpu_threads_per_caller 2"
+    num_callers = params.num_callers ? "--num_callers $params.num_callers" : "--num_callers 1"
 
     """
     guppy_basecaller \\
@@ -188,15 +190,21 @@ process porechop {
 
   output:
   file "trimmed*.fastq.gz" into ch_porechop
-  file "logs/*.log" into ch_log_porechop
+  file "logs/trimmed*.log" into ch_log_porechop
 
   when:
   !params.skip_porechop
 
   script:
+  threads = params.cpus ? "--threads $params.cpus" : "--threads 4"
   """
   mkdir logs
-  porechop -i $fastq_file -o trimmed_$fastq_file -t 100 > logs/"${fastq_file.simpleName}".log
+  porechop \\
+    --input $fastq_file \\
+    --output trimmed_$fastq_file \\
+    $threads \\
+    --no_spilt \\
+    > logs/trimmed_"${fastq_file.simpleName}".log
   """
 }
 
