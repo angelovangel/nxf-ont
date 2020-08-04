@@ -188,7 +188,7 @@ process porechop {
 
   output:
   file "trimmed*.fastq.gz" into ch_porechop
-  file "logs/*.log" into ch_log_porechop
+  file "logs/*.log" into ch_l_porechop
 
   when:
   !params.skip_porechop
