@@ -80,7 +80,7 @@ if ( !params.skip_basecalling ) {
     file csv_file from ch_input_csv.ifEmpty([])
 
     output:
-    file "fastq/*.fastq.gz" into ch_fastq
+    file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
     file "rename.log" into ch_log_rename
     file "results-guppy-basecaller/*.txt" into ch_summary_guppy
@@ -146,7 +146,7 @@ if ( !params.skip_basecalling ) {
     file csv_file from ch_input_csv.ifEmpty([])
 
     output:
-    file "fastq/*.fastq.gz" into ch_fastq
+    file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_barcoder.log" into ch_log_guppy_barcoder
     file "rename.log" into ch_log_rename
     file "results-guppy-barcoder/*.txt" into ch_summary_guppy
@@ -196,7 +196,7 @@ process porechop {
   publishDir path: "${params.outdir}/porechop", mode:'copy'
 
   input:
-  file fastq_file from ch_fastq.flatten()
+  file fastq_file from ch_fastq.collect()
 
   output:
   file "trimmed*.fastq.gz" into ch_porechop
@@ -238,7 +238,7 @@ process seqkit {
   publishDir path: "${params.outdir}/seqkit", mode:'copy'
 
   input:
-  file fastq_file from !params.skip_porechop ? ch_porechop.collect() : ch_fastq.collect()
+  file fastq_file from !params.skip_porechop ? ch_porechop.collect() : ch_for_seqkit.collect()
 
   output:
   file "*.*"
