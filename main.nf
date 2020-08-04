@@ -142,7 +142,6 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq
 
     script:
-    //input_path = params.skip_basecalling ? params.input_path : basecalled_files
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
     worker_threads = params.cpus ? "--worker_threads $params.cpus" : "--worker_threads 4"
 
@@ -181,7 +180,6 @@ if ( !params.skip_basecalling ) {
   }
 }
 
-
 process porechop {
   publishDir path: "${params.outdir}/porechop", mode:'copy'
 
@@ -192,13 +190,15 @@ process porechop {
 
   output:
   file "trimmed*.fastq.gz" into ch_porechop
+  file "logs/*.log" into ch_log_porechop
 
   when:
   !params.skip_porechop
 
   script:
   """
-  porechop -i $fastq_file -o trimmed_$fastq_file -t 100
+  mkdir logs
+  porechop -i $fastq_file -o trimmed_$fastq_file -t 100 &> logs/$fastq_file.log
   """
 }
 
