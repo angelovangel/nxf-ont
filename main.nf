@@ -229,8 +229,8 @@ process pycoqc {
 
   script:
   """
-  pycoQC --file $summary_file \\
-    --outfile pycoQC.html
+  pycoQC -f $summary_file \\
+    -o pycoQC.html
   """
 }
 
