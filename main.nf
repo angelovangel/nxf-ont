@@ -82,6 +82,7 @@ if ( !params.skip_basecalling ) {
     output:
     file "fastq/*.fastq.gz" into ch_fastq
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
+    file "rename.log" into ch_log_rename
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
@@ -91,7 +92,7 @@ if ( !params.skip_basecalling ) {
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
     cpu_threads_per_caller = params.cpu_threads_per_caller ? "--cpu_threads_per_caller $params.cpu_threads_per_caller" 
-                              : (params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller 2")
+                          : (params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller 2")
     num_callers = params.num_callers ? "--num_callers $params.num_callers" : "--num_callers 1"
 
     """
@@ -128,6 +129,7 @@ if ( !params.skip_basecalling ) {
     then
       while IFS=, read -r ob nb
       do
+        echo rename \$ob.fastq.gz to \$nb.fastq.gz &>> rename.log
         mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
       done < ../../$csv_file
     fi
@@ -145,6 +147,7 @@ if ( !params.skip_basecalling ) {
     output:
     file "fastq/*.fastq.gz" into ch_fastq
     file "guppy_barcoder.log" into ch_log_guppy_barcoder
+    file "rename.log" into ch_log_rename
 
     script:
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
@@ -179,6 +182,7 @@ if ( !params.skip_basecalling ) {
     then
       while IFS=, read -r ob nb
       do
+        echo rename \$ob.fastq.gz to \$nb.fastq.gz &>> rename.log
         mv ../fastq/\$ob.fastq.gz ../fastq/\$nb.fastq.gz
       done < ../$csv_file
     fi
