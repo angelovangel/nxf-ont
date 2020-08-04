@@ -73,10 +73,7 @@ guppy basecalling
 if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
-    publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy',
-      saveAs: { filename ->
-                  if (filename.endsWith(".txt")) filename
-              }
+    publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy'
     
     input:
     file dir_fast5 from ch_input_files
