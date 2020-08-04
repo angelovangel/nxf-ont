@@ -183,8 +183,6 @@ if ( !params.skip_basecalling ) {
 process porechop {
   publishDir path: "${params.outdir}/porechop", mode:'copy'
 
-  conda 'porechop.yml'
-
   input:
   file fastq_file from ch_fastq.flatten()
 
