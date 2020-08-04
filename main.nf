@@ -74,7 +74,10 @@ if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
     publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy'
-
+    saveAs: { filename ->
+                if (filename.endsWith(".txt")) filename
+            }
+    
     input:
     file dir_fast5 from ch_input_files
     file csv_file from ch_input_csv.ifEmpty([])
@@ -241,7 +244,7 @@ process seqkit {
   file fastq_file from !params.skip_porechop ? ch_porechop.collect() : ch_for_seqkit.collect()
 
   output:
-  file "*.*"
+  file "seqkit.txt"
 
   script:
   """
