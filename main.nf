@@ -81,6 +81,7 @@ if ( !params.skip_basecalling ) {
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
+    file "guppy_basecaller.log" into ch_log_guppy_basecaller
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
@@ -108,6 +109,7 @@ if ( !params.skip_basecalling ) {
       --qscore_filtering \\
       $config \\
       --compress_fastq \\
+      &> guppy_basecaller.log 
 
     mkdir fastq
     cd results-guppy-basecaller/pass
@@ -142,6 +144,7 @@ if ( !params.skip_basecalling ) {
 
     output:
     file "fastq/*.fastq.gz" into ch_fastq
+    file "guppy_barcoder.log" into ch_log_guppy_barcoder
 
     script:
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
@@ -157,6 +160,7 @@ if ( !params.skip_basecalling ) {
       --barcode_kits $params.barcode_kits \\
       $trim_barcodes \\
       $worker_threads \\
+      &> guppy_barcoder.log
 
     mkdir fastq
     cd results-guppy-barcoder
@@ -203,8 +207,8 @@ process porechop {
     --input $fastq_file \\
     --output trimmed_$fastq_file \\
     $threads \\
-    --no_spilt \\
-    > logs/trimmed_"${fastq_file.simpleName}".log
+    --no_split \\
+    &> logs/trimmed_"${fastq_file.simpleName}".log
   """
 }
 
