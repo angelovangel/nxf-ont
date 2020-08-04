@@ -83,6 +83,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
     file "rename.log" into ch_log_rename
+    file "results-guppy-basecaller/*.txt" into ch_summary_guppy
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
@@ -148,6 +149,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq
     file "guppy_barcoder.log" into ch_log_guppy_barcoder
     file "rename.log" into ch_log_rename
+    file "results-guppy-barcoder/*.txt" into ch_summary_guppy
 
     script:
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
@@ -216,6 +218,21 @@ process porechop {
   """
 }
 
+process pycoqc {
+  publishDir path: "${params.outdir}/pycoqc", mode:'copy'
+  
+  input:
+  file $summary_file from ch_summary_guppy
+
+  output:
+  file "pycoQC.html"
+
+  script:
+  """
+  pycoQC --summary_file $summary_file \\
+    --html_outfile pycoQC.html
+  """
+}
 
 /*
 process rename_barcodes {
