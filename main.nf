@@ -195,7 +195,6 @@ process porechop {
 
   script:
   """
-  mkdir logs
   porechop -i $fastq_file -o trimmed_$fastq_file -t 100 &> logs/$fastq_file.log
   """
 }
