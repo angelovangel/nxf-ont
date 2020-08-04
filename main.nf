@@ -90,7 +90,7 @@ if ( !params.skip_basecalling ) {
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
     cpu_threads_per_caller = params.cpu_threads_per_caller ? "--cpu_threads_per_caller $params.cpu_threads_per_caller" 
-                              : params.cpus ?  "--cpu_threads_per_caller $params.cpus" "--cpu_threads_per_caller 2"
+                              : (params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller 2")
     num_callers = params.num_callers ? "--num_callers $params.num_callers" : "--num_callers 1"
 
     """
