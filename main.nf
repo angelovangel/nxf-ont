@@ -11,7 +11,6 @@ Creator/Maintainer:
 aangeloo@gmail.com
 */
 
-
 /*
 NXF ver 19.08+ needed because of the use of tuple instead of set
 */
