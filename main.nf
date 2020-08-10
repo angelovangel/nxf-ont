@@ -82,7 +82,7 @@ if ( !params.skip_basecalling ) {
     output:
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
-    file "rename.log" into ch_log_rename.ifEmpty([])
+    //file "rename.log" into ch_log_rename
     file "results-guppy-basecaller/*.txt" into ch_summary_guppy
 
     script:
@@ -148,7 +148,7 @@ if ( !params.skip_basecalling ) {
     output:
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_barcoder.log" into ch_log_guppy_barcoder
-    file "rename.log" into ch_log_rename.ifEmpty([])
+    //file "rename.log" into ch_log_rename
     file "results-guppy-barcoder/*.txt" into ch_summary_guppy
 
     script:
