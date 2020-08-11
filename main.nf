@@ -96,11 +96,11 @@ def helpMessage() {
       --skip_basecalling [bool]       Skip basecalling with guppy_basecaller (Default: false)
       --skip_demultiplexing [bool]    Skip demultiplexing with guppy_barcoder (Default: false)
 
-   """.stripIndent()
+  """.stripIndent()
 }
 
 if ( params.help ) {
-  helpMessage()
+  //helpMessage()
   exit 0
 }
 
