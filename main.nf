@@ -27,19 +27,6 @@ ANSI_GREEN = "\033[1;32m"
 ANSI_RED = "\033[1;31m"
 ANSI_RESET = "\033[0m"
 
-//ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
-//ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
-
-/*
-if ( params.csv ) { 
-  ch_input_csv = Channel.fromPath( params.csv, checkIfExists: true )
-} else { 
-  ch_input_csv = Channel.empty()
-}
-*/
-//ch_input_csv = Channel.fromPath( params.csv )
-//options: qc
-
 def helpMessage() {
 
   log.info"""
@@ -88,7 +75,6 @@ def helpMessage() {
   """.stripIndent()
 }
 
-
 if ( params.help ) {
   helpMessage()
   exit 0
@@ -121,10 +107,8 @@ summary['trim barcodes'] = params.trim_barcodes ? 'Yes' : 'No'
 summary['adapter trimming'] = params.skip_porechop ? 'No' : 'Yes'
 summary['pycoQC'] = 'Yes'
 summary['seqkit'] = 'Yes'
-
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "-\033[2m--------------------------------------------------\033[0m-"
-
 
 /*
 guppy basecalling
@@ -303,5 +287,19 @@ process seqkit {
   script:
   """
   seqkit stats $fastq_file > seqkit.txt
+  """
+}
+
+process get_software_versions {
+  publishDir path: "${params.outdir}/pipeline_info", mode:'copy'
+
+  output:
+  file "pipeline_info.txt"
+
+  script:
+  """
+  porechop --version &> pipeline_info.txt
+  pycoQC --version &> pieline_info.txt
+  seqkit version &> pipeline_info.txt
   """
 }
