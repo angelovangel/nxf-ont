@@ -74,10 +74,6 @@ if ( params.kit && !params.flowcell ) {
   exit 1, "Error: no valid flowcell found."  
 } 
 
-if ( params.skip_demultiplexing ) {
-  params.skip_porechop
-}
-
 /*
 guppy basecalling
 */
