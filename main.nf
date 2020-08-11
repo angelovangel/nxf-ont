@@ -58,6 +58,7 @@ def helpMessage() {
   Mandatory arguments
       --input [dir]                   The directory contains raw FAST5 files.
       --csv [file]                    Comma-separated file containing pairs of sample names and barcodes.
+                                      Only required for renaming.
       --cpus [int]                    Number of threads used for pipeline (default: 4)
       -profile [str]                  Configuration profile to use. 
                                       Available: docker.
@@ -104,6 +105,16 @@ if ( params.kit && !params.flowcell ) {
   exit 1, "Error: no valid flowcell found."  
 } 
 
+def summary = [:]
+
+if (params.flowcell) summary['Flowcell'] = params.flowcell
+if (params.kit) summary['Kit'] = params.kit
+if (params.config) summary['Config'] = params.config
+
+log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
+log.info "-\033[2m--------------------------------------------------\033[0m-"
+
+
 /*
 guppy basecalling
 */
@@ -128,7 +139,6 @@ if ( !params.skip_basecalling ) {
     barcode_kits = params.barcode_kits ? "--barcode_kits $params.barcode_kits" : ""
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
-
     cpu_threads_per_caller = params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller $params.cpu_threads_per_caller"
     //num_callers = "--num_callers $params.num_callers"
 
