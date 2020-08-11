@@ -73,7 +73,7 @@ def helpMessage() {
       --trim_barcodes [bool]          Trim the barcodes from the output sequencesin the FastQ files (default: false).
       --config [file/str]             Guppy config file used for basecalling e.g. dna_r9.4.1_450bps_fast.cfg. 
                                       Cannot be used in conjunction with '--flowcell' and '--kit'.
-      --cpu_threads_per_caller [int]  Number of threads used for guppy_basecaller (default: 2, overwritten by '--cpus' if it is specified).
+      --cpu_threads_per_caller [int]  Number of threads used for guppy_basecaller (default: 2, will overwrite '--cpus').
       --num_callers [int]             Number of callers used for guppy_basecaller (default: 1).
       --skip_basecalling [bool]       Skip basecalling with guppy_basecaller (default: false)
       --skip_demultiplexing [bool]    Skip demultiplexing with guppy_barcoder (default: false)
@@ -106,10 +106,21 @@ if ( params.kit && !params.flowcell ) {
 } 
 
 def summary = [:]
-
-if (params.flowcell) summary['Flowcell'] = params.flowcell
-if (params.kit) summary['Kit'] = params.kit
-if (params.config) summary['Config'] = params.config
+summary['input'] = params.input
+summary['cpus'] = params.cpus
+if (params.csv) summary['csv'] = params.csv
+summary['basecalling'] = params.skip_basecalling ? 'No' : 'Yes'
+if (params.flowcell) summary['flowcell'] = params.flowcell
+if (params.kit) summary['kit'] = params.kit
+if (params.config) summary['config'] = params.config
+summary['cpu threads per caller'] = params.cpu_threads_per_caller
+summary['number of callers'] = params.num_callers
+summary['demultiplexing'] = params.skip_demultiplexing ? 'No' : 'Yes'
+if (params.barcode_kit) summary['barcode kit'] = params.barcode_kit
+summary['trim barcodes'] = params.trim_barcodes ? 'No' : 'Yes'
+summary['adapter trimming'] = params.skip_porechop ? 'No' : 'Yes'
+summary['pycoQC'] = 'Yes'
+summary['seqkit'] = 'Yes'
 
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "-\033[2m--------------------------------------------------\033[0m-"
@@ -139,7 +150,7 @@ if ( !params.skip_basecalling ) {
     barcode_kits = params.barcode_kits ? "--barcode_kits $params.barcode_kits" : ""
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
-    cpu_threads_per_caller = params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller $params.cpu_threads_per_caller"
+    //cpu_threads_per_caller = params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller $params.cpu_threads_per_caller"
     //num_callers = "--num_callers $params.num_callers"
 
     """
@@ -152,7 +163,7 @@ if ( !params.skip_basecalling ) {
       $kit \\
       $barcode_kits \\
       $trim_barcodes \\
-      $cpu_threads_per_caller \\
+      --cpu_threads_per_caller $params.cpu_threads_per_caller \\
       --num_callers $params.num_callers \\
       --qscore_filtering \\
       $config \\
