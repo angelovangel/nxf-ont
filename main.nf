@@ -300,8 +300,8 @@ process get_software_versions {
 
   script:
   """
-  porechop --version &>> pipeline_info.txt
-  pycoQC --version &>> pieline_info.txt
+  echo porechop && porechop --version &>> pipeline_info.txt
+  echo pycoQC && pycoQC --version &>> pipeline_info.txt
   seqkit version &>> pipeline_info.txt
   """
 }
