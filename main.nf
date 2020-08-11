@@ -28,7 +28,7 @@ ANSI_RED = "\033[1;31m"
 ANSI_RESET = "\033[0m"
 
 ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
-ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
+//ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
 
 if ( params.csv ) { 
   ch_input_csv = Channel.fromPath( params.csv, checkIfExists: true )
