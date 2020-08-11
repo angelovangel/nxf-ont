@@ -66,6 +66,39 @@ ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) 
 //ch_input_csv = Channel.fromPath( params.csv )
 //options: qc
 
+def helpMessage() {
+  Usage:
+
+  The typical command for running the pipeline is as follows:
+
+    nextflow run angelovangel/nxf-ont \
+        --input /path/to/fast5/files/ \
+        --flowcell FLO-PRO001 \
+        --kit SQK-LSK109 \
+        --barcode_kit EXP-NBD104 \
+        -profile docker
+  
+  Mandatory arguments
+      --input [dir]                   The directory contains raw FAST5 files.
+      -profile [str]                  Configuration profile to use.
+                                      Available: docker.
+  
+Basecalling/Demultiplexing
+      --flowcell [str]                Flowcell used to perform the sequencing e.g. FLO-MIN106. Not required if '--config' is specified.
+      --kit [str]                     Kit used to perform the sequencing e.g. SQK-LSK109. Not required if '--config' is specified.
+      --barcode_kit [str]             Barcode kit used to perform the sequencing e.g. SQK-PBK004. Not required if '--skip_demultiplexing' is specified.
+      --config [file/str]             Guppy config file used for basecalling e.g. dna_r9.4.1_450bps_fast.cfg. Cannot be used in conjunction with '--flowcell' and '--kit'.
+      --cpu_threads_per_caller [int]  Number of threads used for guppy_basecaller (Default: 2).
+      --num_callers [int]             Number of callers used for guppy_basecaller (Default: 1).
+      --skip_basecalling [bool]       Skip basecalling with guppy_basecaller (Default: false)
+      --skip_demultiplexing [bool]    Skip demultiplexing with guppy_barcoder (Default: false)
+}
+
+if ( params.help ) {
+  helpMessage()
+  exit 0
+}
+
 if ( params.flowcell && !params.kit ) { 
   exit 1, "Error: no valid kit found."  
 }
