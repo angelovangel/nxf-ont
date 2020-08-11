@@ -210,7 +210,7 @@ process porechop {
   file "logs/trimmed*.log" into ch_log_porechop
 
   when:
-  !params.skip_porechop
+  !params.skip_porechop && !params.skip_demultiplexing
 
   script:
   threads = params.cpus ? "--threads $params.cpus" : "--threads 4"
