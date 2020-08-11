@@ -245,7 +245,7 @@ process seqkit {
   publishDir path: "${params.outdir}/seqkit", mode:'copy'
 
   input:
-  file fastq_file from !params.skip_porechop ? ch_porechop.collect() : ch_for_seqkit.collect()
+  file fastq_file from !params.skip_porechop && !params.skip_demultiplexing ? ch_porechop.collect() : ch_for_seqkit.collect()
 
   output:
   file "seqkit.txt"
