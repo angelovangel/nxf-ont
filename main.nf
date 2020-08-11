@@ -27,34 +27,6 @@ ANSI_GREEN = "\033[1;32m"
 ANSI_RED = "\033[1;31m"
 ANSI_RESET = "\033[0m"
 
-/* 
- * pipeline input parameters 
- */
-
-//Options: mandatory
-params.input = false
-params.outdir = "./results"
-params.csv = false
-
-// Options: guppy basecalling
-params.skip_basecalling = false
-params.skip_demultiplexing = false
-params.skip_porechop = false
-
-//params.input_path = false
-params.flowcell = false
-params.kit = false
-params.barcode_kits = false
-//params.guppy_config = false
-//params.guppy_model = false
-
-params.cpus = false
-params.cpu_threads_per_caller = false
-params.num_callers = false
-params.config = false
-params.trim_barcodes = false
-
-params.help = false
 
 ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
 ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
@@ -87,13 +59,17 @@ def helpMessage() {
       --input [dir]                   The directory contains raw FAST5 files.
       --csv [file]                    Comma-separated file containing pairs of sample names and barcodes.
       --cpus [int]                    Number of threads used for pipeline (default: 4)
-      --help                          Show this help message and exit.
-      -profile [str]                  Configuration profile to use. Available: docker.
+      -profile [str]                  Configuration profile to use. 
+                                      Available: docker.
   
   Basecalling/Demultiplexing
-      --flowcell [str]                Flowcell used to perform the sequencing e.g. FLO-MIN106. Not required if '--config' is specified.
-      --kit [str]                     Kit used to perform the sequencing e.g. SQK-LSK109. Not required if '--config' is specified.
-      --barcode_kit [str]             Barcode kit used to perform the sequencing e.g. SQK-PBK004. Not required if '--skip_demultiplexing' is specified.
+      --flowcell [str]                Flowcell used to perform the sequencing e.g. FLO-MIN106. 
+                                      Not required if '--config' is specified.
+      --kit [str]                     Kit used to perform the sequencing e.g. SQK-LSK109. 
+                                      Not required if '--config' is specified.
+      --barcode_kit [str]             Barcode kit used to perform the sequencing e.g. SQK-PBK004. 
+                                      Not required if '--skip_demultiplexing' is specified.
+      --trim_barcodes [bool]          Trim the barcodes from the output sequencesin the FastQ files (default: false).
       --config [file/str]             Guppy config file used for basecalling e.g. dna_r9.4.1_450bps_fast.cfg. 
                                       Cannot be used in conjunction with '--flowcell' and '--kit'.
       --cpu_threads_per_caller [int]  Number of threads used for guppy_basecaller (default: 2, overwritten by '--cpus' if it is specified).
@@ -102,7 +78,11 @@ def helpMessage() {
       --skip_demultiplexing [bool]    Skip demultiplexing with guppy_barcoder (default: false)
 
   Adapter trimming
-      --skip_porechop [bool]          Skip adapter trimming with porechop (default: false, if '--skip_demultiplexing' is specified, adapter trimming will also be skipped.)
+      --skip_porechop [bool]          Skip adapter trimming with porechop 
+                                      (default: false, if '--skip_demultiplexing' is specified, adapter trimming will also be skipped.)
+  
+  Other
+      --help                          Show this help message and exit.
   
   """.stripIndent()
 }
@@ -147,9 +127,8 @@ if ( !params.skip_basecalling ) {
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
-    cpu_threads_per_caller = params.cpu_threads_per_caller ? "--cpu_threads_per_caller $params.cpu_threads_per_caller" 
-                          : (params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller 2")
-    num_callers = params.num_callers ? "--num_callers $params.num_callers" : "--num_callers 1"
+    cpu_threads_per_caller = params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller $params.cpu_threads_per_caller")
+    //num_callers = "--num_callers $params.num_callers"
 
     """
     guppy_basecaller \\
@@ -162,7 +141,7 @@ if ( !params.skip_basecalling ) {
       $barcode_kits \\
       $trim_barcodes \\
       $cpu_threads_per_caller \\
-      $num_callers \\
+      --num_callers $params.num_callers \\
       --qscore_filtering \\
       $config \\
       --compress_fastq \\
@@ -208,7 +187,7 @@ if ( !params.skip_basecalling ) {
 
     script:
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
-    worker_threads = params.cpus ? "--worker_threads $params.cpus" : "--worker_threads 4"
+    //worker_threads = params.cpus ? "--worker_threads $params.cpus" : "--worker_threads 4"
 
     """
     guppy_barcoder \\
@@ -219,7 +198,7 @@ if ( !params.skip_basecalling ) {
       --compress_fastq \\
       --barcode_kits $params.barcode_kits \\
       $trim_barcodes \\
-      $worker_threads \\
+      --worker_threads $params.cpus \\
       &> guppy_barcoder.log
 
     mkdir fastq
