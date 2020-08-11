@@ -153,7 +153,7 @@ if ( !params.skip_basecalling ) {
       $config \\
       --compress_fastq \\
       &> guppy_basecaller.log
-    cp results-guppy-basecaller\sequencing_summary.txt .
+    cp results-guppy-basecaller/sequencing_summary.txt .
 
     mkdir fastq
     cd results-guppy-basecaller/pass
