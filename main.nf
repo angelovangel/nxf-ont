@@ -27,15 +27,16 @@ ANSI_GREEN = "\033[1;32m"
 ANSI_RED = "\033[1;31m"
 ANSI_RESET = "\033[0m"
 
-ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
+//ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
 //ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
 
+/*
 if ( params.csv ) { 
   ch_input_csv = Channel.fromPath( params.csv, checkIfExists: true )
 } else { 
   ch_input_csv = Channel.empty()
 }
-
+*/
 //ch_input_csv = Channel.fromPath( params.csv )
 //options: qc
 
@@ -92,6 +93,8 @@ if ( params.help ) {
   exit 0
 }
 
+ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
+ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
 
 if ( params.flowcell && !params.kit ) { 
   exit 1, "Error: no valid kit found."  
