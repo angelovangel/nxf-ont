@@ -27,16 +27,15 @@ ANSI_GREEN = "\033[1;32m"
 ANSI_RED = "\033[1;31m"
 ANSI_RESET = "\033[0m"
 
-
 ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
 ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
 
-/*if ( params.csv ) { 
-  ch_input_csv = file(params.csv, checkIfExists: true) 
+if ( params.csv ) { 
+  ch_input_csv = Channel.fromPath( params.csv, checkIfExists: true )
 } else { 
-  exit 1, "Samplesheet file not specified!" 
+  ch_input_csv = Channel.empty()
 }
-*/
+
 //ch_input_csv = Channel.fromPath( params.csv )
 //options: qc
 
@@ -44,45 +43,45 @@ def helpMessage() {
 
   log.info"""
   
-  Usage:
+    Usage:
 
-  The typical command for running the pipeline is as follows:
+    The typical command for running the pipeline is as follows:
 
-    nextflow run angelovangel/nxf-ont \\
-        --input /path/to/fast5/files/ \\
-        --flowcell FLO-PRO001 \\
-        --kit SQK-LSK109 \\
-        --barcode_kit EXP-NBD104 \\
-        -profile docker
+      nextflow run angelovangel/nxf-ont \\
+          --input /path/to/fast5/files/ \\
+          --flowcell FLO-PRO001 \\
+          --kit SQK-LSK109 \\
+          --barcode_kit EXP-NBD104 \\
+          -profile docker
   
-  Mandatory arguments
-      --input [dir]                   The directory contains raw FAST5 files.
-      --csv [file]                    Comma-separated file containing pairs of sample names and barcodes.
-      --cpus [int]                    Number of threads used for pipeline (default: 4)
-      -profile [str]                  Configuration profile to use. 
-                                      Available: docker.
+    Mandatory arguments
+        --input [dir]                   The directory contains raw FAST5 files.
+        --csv [file]                    Comma-separated file containing pairs of sample names and barcodes.
+        --cpus [int]                    Number of threads used for pipeline (default: 4)
+        -profile [str]                  Configuration profile to use. 
+                                        Available: docker.
   
-  Basecalling/Demultiplexing
-      --flowcell [str]                Flowcell used to perform the sequencing e.g. FLO-MIN106. 
-                                      Not required if '--config' is specified.
-      --kit [str]                     Kit used to perform the sequencing e.g. SQK-LSK109. 
-                                      Not required if '--config' is specified.
-      --barcode_kit [str]             Barcode kit used to perform the sequencing e.g. SQK-PBK004. 
-                                      Not required if '--skip_demultiplexing' is specified.
-      --trim_barcodes [bool]          Trim the barcodes from the output sequencesin the FastQ files (default: false).
-      --config [file/str]             Guppy config file used for basecalling e.g. dna_r9.4.1_450bps_fast.cfg. 
-                                      Cannot be used in conjunction with '--flowcell' and '--kit'.
-      --cpu_threads_per_caller [int]  Number of threads used for guppy_basecaller (default: 2, overwritten by '--cpus' if it is specified).
-      --num_callers [int]             Number of callers used for guppy_basecaller (default: 1).
-      --skip_basecalling [bool]       Skip basecalling with guppy_basecaller (default: false)
-      --skip_demultiplexing [bool]    Skip demultiplexing with guppy_barcoder (default: false)
+    Basecalling/Demultiplexing
+        --flowcell [str]                Flowcell used to perform the sequencing e.g. FLO-MIN106. 
+                                        Not required if '--config' is specified.
+        --kit [str]                     Kit used to perform the sequencing e.g. SQK-LSK109. 
+                                        Not required if '--config' is specified.
+        --barcode_kit [str]             Barcode kit used to perform the sequencing e.g. SQK-PBK004. 
+                                        Not required if '--skip_demultiplexing' is specified.
+        --trim_barcodes [bool]          Trim the barcodes from the output sequencesin the FastQ files (default: false).
+        --config [file/str]             Guppy config file used for basecalling e.g. dna_r9.4.1_450bps_fast.cfg. 
+                                        Cannot be used in conjunction with '--flowcell' and '--kit'.
+        --cpu_threads_per_caller [int]  Number of threads used for guppy_basecaller (default: 2, overwritten by '--cpus' if it is specified).
+        --num_callers [int]             Number of callers used for guppy_basecaller (default: 1).
+        --skip_basecalling [bool]       Skip basecalling with guppy_basecaller (default: false)
+        --skip_demultiplexing [bool]    Skip demultiplexing with guppy_barcoder (default: false)
 
-  Adapter trimming
-      --skip_porechop [bool]          Skip adapter trimming with porechop 
-                                      (default: false, if '--skip_demultiplexing' is specified, adapter trimming will also be skipped.)
+    Adapter trimming
+        --skip_porechop [bool]          Skip adapter trimming with porechop 
+                                        (default: false, if '--skip_demultiplexing' is specified, adapter trimming will also be skipped.)
   
-  Other
-      --help                          Show this help message and exit.
+    Other
+        --help                          Show this help message and exit.
   
   """.stripIndent()
 }
@@ -282,26 +281,3 @@ process seqkit {
   seqkit stats $fastq_file > seqkit.txt
   """
 }
-
-/*
-process rename_barcodes {
-  publishDir path: "${params.outdir}/rename_barcodes", mode:'copy'
-
-  input:
-  file fastq_files from ch_fastq
-  file csv_file from ch_input_csv
-
-  output:
-  file "test.txt" into ch_renamed_fastq
-  
-  when:
-  params.csv
-
-}
-*/
-
-
-
-/*
-guppy barcoder
-*/
