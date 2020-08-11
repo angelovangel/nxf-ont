@@ -113,11 +113,11 @@ summary['basecalling'] = params.skip_basecalling ? 'No' : 'Yes'
 if (params.flowcell) summary['flowcell'] = params.flowcell
 if (params.kit) summary['kit'] = params.kit
 if (params.config) summary['config'] = params.config
-summary['cpu threads per caller'] = params.cpu_threads_per_caller
+summary['cpus per caller'] = params.cpu_threads_per_caller ? params.cpu_threads_per_caller : params.cpus
 summary['number of callers'] = params.num_callers
 summary['demultiplexing'] = params.skip_demultiplexing ? 'No' : 'Yes'
 if (params.barcode_kits) summary['barcode kits'] = params.barcode_kits
-summary['trim barcodes'] = params.trim_barcodes ? 'No' : 'Yes'
+summary['trim barcodes'] = params.trim_barcodes ? 'Yes' : 'No'
 summary['adapter trimming'] = params.skip_porechop ? 'No' : 'Yes'
 summary['pycoQC'] = 'Yes'
 summary['seqkit'] = 'Yes'
@@ -163,7 +163,7 @@ if ( !params.skip_basecalling ) {
       $kit \\
       $barcode_kits \\
       $trim_barcodes \\
-      --cpu_threads_per_caller $params.cpu_threads_per_caller \\
+      $cpu_threads_per_caller \\
       --num_callers $params.num_callers \\
       --qscore_filtering \\
       $config \\
