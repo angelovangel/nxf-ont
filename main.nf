@@ -67,6 +67,9 @@ ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) 
 //options: qc
 
 def helpMessage() {
+
+  log.info"""
+  
   Usage:
 
   The typical command for running the pipeline is as follows:
@@ -83,7 +86,7 @@ def helpMessage() {
       -profile [str]                  Configuration profile to use.
                                       Available: docker.
   
-Basecalling/Demultiplexing
+  Basecalling/Demultiplexing
       --flowcell [str]                Flowcell used to perform the sequencing e.g. FLO-MIN106. Not required if '--config' is specified.
       --kit [str]                     Kit used to perform the sequencing e.g. SQK-LSK109. Not required if '--config' is specified.
       --barcode_kit [str]             Barcode kit used to perform the sequencing e.g. SQK-PBK004. Not required if '--skip_demultiplexing' is specified.
@@ -92,6 +95,8 @@ Basecalling/Demultiplexing
       --num_callers [int]             Number of callers used for guppy_basecaller (Default: 1).
       --skip_basecalling [bool]       Skip basecalling with guppy_basecaller (Default: false)
       --skip_demultiplexing [bool]    Skip demultiplexing with guppy_barcoder (Default: false)
+
+   """.stripIndent()
 }
 
 if ( params.help ) {
