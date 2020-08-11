@@ -116,7 +116,7 @@ if (params.config) summary['config'] = params.config
 summary['cpu threads per caller'] = params.cpu_threads_per_caller
 summary['number of callers'] = params.num_callers
 summary['demultiplexing'] = params.skip_demultiplexing ? 'No' : 'Yes'
-if (params.barcode_kit) summary['barcode kit'] = params.barcode_kits
+if (params.barcode_kits) summary['barcode kits'] = params.barcode_kits
 summary['trim barcodes'] = params.trim_barcodes ? 'No' : 'Yes'
 summary['adapter trimming'] = params.skip_porechop ? 'No' : 'Yes'
 summary['pycoQC'] = 'Yes'
@@ -150,7 +150,7 @@ if ( !params.skip_basecalling ) {
     barcode_kits = params.barcode_kits ? "--barcode_kits $params.barcode_kits" : ""
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
-    //cpu_threads_per_caller = params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller $params.cpu_threads_per_caller"
+    cpu_threads_per_caller = params.cpu_threads_per_caller ?  "--cpu_threads_per_caller $params.cpu_threads_per_caller" : "--cpu_threads_per_caller $params.cpus"
     //num_callers = "--num_callers $params.num_callers"
 
     """
