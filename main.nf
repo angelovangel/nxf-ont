@@ -126,7 +126,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
     file "rename.log" optional true into ch_log_rename
-    file "results-guppy-basecaller/*.txt" into ch_summary_guppy
+    file "sequencing_summary.txt" into ch_summary_guppy
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
@@ -152,7 +152,8 @@ if ( !params.skip_basecalling ) {
       --qscore_filtering \\
       $config \\
       --compress_fastq \\
-      &> guppy_basecaller.log 
+      &> guppy_basecaller.log
+    cp results-guppy-basecaller\sequencing_summary.txt .
 
     mkdir fastq
     cd results-guppy-basecaller/pass
@@ -190,7 +191,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_barcoder.log" into ch_log_guppy_barcoder
     file "rename.log" optional true into ch_log_rename
-    file "results-guppy-barcoder/*.txt" into ch_summary_guppy
+    file "sequencing_summary.txt" into ch_summary_guppy
 
     script:
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
@@ -207,6 +208,7 @@ if ( !params.skip_basecalling ) {
       $trim_barcodes \\
       --worker_threads $params.cpus \\
       &> guppy_barcoder.log
+    cp results-guppy-barcoder/sequencing_summary.txt .
 
     mkdir fastq
     cd results-guppy-barcoder
@@ -298,8 +300,8 @@ process get_software_versions {
 
   script:
   """
-  porechop --version &> pipeline_info.txt
-  pycoQC --version &> pieline_info.txt
-  seqkit version &> pipeline_info.txt
+  porechop --version &>> pipeline_info.txt
+  pycoQC --version &>> pieline_info.txt
+  seqkit version &>> pipeline_info.txt
   """
 }
