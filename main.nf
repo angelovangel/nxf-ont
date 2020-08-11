@@ -56,7 +56,7 @@ params.trim_barcodes = false
 
 params.help = false
 
-ch_input_files = Channel.fromPath( params.input )
+//ch_input_files = Channel.fromPath( params.input )
 ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
 
 /*if ( params.csv ) { 
