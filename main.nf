@@ -127,6 +127,7 @@ if ( !params.skip_basecalling ) {
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
     file "rename.log" optional true into ch_log_rename
     file "sequencing_summary.txt" into ch_summary_guppy
+    file "v_guppy_basecaller.txt" into ch_version_guppy
 
     script:
     flowcell = params.flowcell ? "--flowcell $params.flowcell" : ""
@@ -138,6 +139,8 @@ if ( !params.skip_basecalling ) {
     //num_callers = "--num_callers $params.num_callers"
 
     """
+    guppy_basecaller --version &> v_guppy_basecaller.txt
+
     guppy_basecaller \\
       --input_path $dir_fast5 \\
       --save_path ./results-guppy-basecaller \\
@@ -192,6 +195,7 @@ if ( !params.skip_basecalling ) {
     file "guppy_barcoder.log" into ch_log_guppy_barcoder
     file "rename.log" optional true into ch_log_rename
     file "sequencing_summary.txt" into ch_summary_guppy
+    file "v_guppy_barcoder.txt" into ch_version_guppy
 
     script:
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
@@ -294,6 +298,9 @@ process seqkit {
 
 process get_software_versions {
   publishDir path: "${params.outdir}/pipeline_info", mode:'copy'
+
+  input:
+  file "*.txt" from ch_version_guppy
 
   output:
   file "pipeline_info.txt"
