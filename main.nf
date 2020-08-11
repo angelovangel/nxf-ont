@@ -75,7 +75,7 @@ if ( params.kit && !params.flowcell ) {
 } 
 
 if ( params.skip_demultiplexing ) {
-  skip_porechop = true
+  params.skip_porechop
 }
 
 /*
