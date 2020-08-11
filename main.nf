@@ -99,12 +99,12 @@ def helpMessage() {
   """.stripIndent()
 }
 
-/*
+
 if ( params.help ) {
-  //helpMessage()
+  helpMessage()
   exit 0
 }
-*/
+
 
 if ( params.flowcell && !params.kit ) { 
   exit 1, "Error: no valid kit found."  
