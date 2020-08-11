@@ -239,7 +239,7 @@ process porechop {
   publishDir path: "${params.outdir}/porechop", mode:'copy'
 
   input:
-  file fastq_file from ch_fastq.collect()
+  file fastq_file from ch_fastq.flatten()
 
   output:
   file "trimmed*.fastq.gz" into ch_porechop
@@ -249,13 +249,13 @@ process porechop {
   !params.skip_porechop && !params.skip_demultiplexing
 
   script:
-  threads = params.cpus ? "--threads $params.cpus" : "--threads 4"
+  //threads = params.cpus ? "--threads $params.cpus" : "--threads 4"
   """
   mkdir logs
   porechop \\
     --input $fastq_file \\
     --output trimmed_$fastq_file \\
-    $threads \\
+    --threads $params.cpus \\
     --no_split \\
     &> logs/trimmed_"${fastq_file.simpleName}".log
   """
