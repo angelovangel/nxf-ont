@@ -127,7 +127,7 @@ if ( !params.skip_basecalling ) {
     config = params.config ? "--config $params.config" : ""
     trim_barcodes = params.trim_barcodes ? "--trim_barcodes" : ""
 
-    cpu_threads_per_caller = params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller $params.cpu_threads_per_caller")
+    cpu_threads_per_caller = params.cpus ?  "--cpu_threads_per_caller $params.cpus" : "--cpu_threads_per_caller $params.cpu_threads_per_caller"
     //num_callers = "--num_callers $params.num_callers"
 
     """
