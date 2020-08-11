@@ -66,6 +66,17 @@ ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) 
 //ch_input_csv = Channel.fromPath( params.csv )
 //options: qc
 
+if ( params.flowcell && !params.kit ) { 
+  exit 1, "Error: no valid kit found."  
+}
+
+if ( params.kit && !params.flowcell ) { 
+  exit 1, "Error: no valid flowcell found."  
+} 
+
+if ( params.skip_demultiplexing ) {
+  params.skip_porechop = true
+}
 
 /*
 guppy basecalling
@@ -82,7 +93,7 @@ if ( !params.skip_basecalling ) {
     output:
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
-    //file "rename.log" into ch_log_rename
+    file "rename.log" optional true into ch_log_rename
     file "results-guppy-basecaller/*.txt" into ch_summary_guppy
 
     script:
@@ -148,7 +159,7 @@ if ( !params.skip_basecalling ) {
     output:
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_barcoder.log" into ch_log_guppy_barcoder
-    //file "rename.log" into ch_log_rename
+    file "rename.log" optional true into ch_log_rename
     file "results-guppy-barcoder/*.txt" into ch_summary_guppy
 
     script:
