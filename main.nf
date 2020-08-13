@@ -94,33 +94,35 @@ if ( params.kit && !params.flowcell ) {
 def summary = [:]
 summary['input'] = params.input
 summary['cpus'] = params.cpus
-if (params.csv) summary['csv'] = params.csv
 summary['basecalling'] = params.skip_basecalling ? 'No' : 'Yes'
-if (params.flowcell) summary['flowcell'] = params.flowcell
-if (params.kit) summary['kit'] = params.kit
-if (params.config) summary['config'] = params.config
-summary['cpus per caller'] = params.cpu_threads_per_caller ? params.cpu_threads_per_caller : params.cpus
-summary['number of callers'] = params.num_callers
+if (!params.skip_basecalling) {
+  if (params.flowcell) summary['flowcell'] = params.flowcell
+  if (params.kit) summary['kit'] = params.kit
+  if (params.config) summary['config'] = params.config
+  summary['cpus per caller'] = params.cpu_threads_per_caller ? params.cpu_threads_per_caller : params.cpus
+  summary['number of callers'] = params.num_callers
+}
 summary['demultiplexing'] = params.skip_demultiplexing ? 'No' : 'Yes'
-if (params.barcode_kits) summary['barcode kits'] = params.barcode_kits
-summary['trim barcodes'] = params.trim_barcodes ? 'Yes' : 'No'
+if (!params.skip_demultiplexing) {
+  if (params.barcode_kits) summary['barcode kits'] = params.barcode_kits
+  summary['trim barcodes'] = params.trim_barcodes ? 'Yes' : 'No'
+  if (params.csv) summary['csv'] = params.csv
+}
 summary['adapter trimming'] = params.skip_porechop ? 'No' : 'Yes'
-summary['pycoQC'] = 'Yes'
-summary['seqkit'] = 'Yes'
+summary['quality control'] = 'pycoQC & seqkit'
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "-\033[2m--------------------------------------------------\033[0m-"
 
 /*
-guppy basecalling
+Guppy basecalling & demultiplexing
 */
 if ( !params.skip_basecalling ) {
   
   process guppy_basecaller {
     publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy',
                         saveAs: { filename -> if (!filename.endsWith("v_guppy_basecaller.txt")) filename }
-    publishDir path: "${params.outdir}/pipeline_info", mode:'copy', saveAs: { filename ->
-                        if (filename.endsWith("v_guppy_basecaller.txt")) filename
-                      }
+    publishDir path: "${params.outdir}/pipeline_info", mode:'copy', 
+                        saveAs: { filename -> if (filename.endsWith("v_guppy_basecaller.txt")) filename }
 
     input:
     file dir_fast5 from ch_input_files
@@ -243,6 +245,9 @@ if ( !params.skip_basecalling ) {
   }
 }
 
+/*
+Adapter trimming with porechop
+*/
 process porechop {
   publishDir path: "${params.outdir}/porechop", mode:'copy'
 
@@ -269,6 +274,9 @@ process porechop {
   """
 }
 
+/*
+Quality control with pycoQC
+*/
 process pycoqc {
   publishDir path: "${params.outdir}/pycoqc", mode:'copy'
   
@@ -285,6 +293,9 @@ process pycoqc {
   """
 }
 
+/*
+Quality control with seqkit
+*/
 process seqkit {
   publishDir path: "${params.outdir}/seqkit", mode:'copy'
 
@@ -296,10 +307,13 @@ process seqkit {
 
   script:
   """
-  seqkit stats $fastq_file > seqkit.txt
+  seqkit stats -all $fastq_file > seqkit.txt
   """
 }
 
+/*
+Get the software versions
+*/
 process get_software_versions {
   publishDir path: "${params.outdir}/pipeline_info", mode:'copy'
 
