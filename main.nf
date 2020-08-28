@@ -122,7 +122,7 @@ if ( !params.skip_basecalling ) {
     process get_test_data {
 
       output:
-      file "test-datasets/*.fast5" into ch_input_files
+      file "test-datasets" into ch_input_files
 
       script:
       """
