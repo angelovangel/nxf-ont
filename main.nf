@@ -79,7 +79,7 @@ if ( params.help ) {
   exit 0
 }
 
-ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
+//ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
 ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
 
 if ( params.flowcell && !params.kit ) { 
@@ -116,6 +116,25 @@ log.info "-\033[2m--------------------------------------------------\033[0m-"
 Guppy basecalling & demultiplexing
 */
 if ( !params.skip_basecalling ) {
+
+  if (workflow.profile.contains('test')) {
+    process get_test_data {
+
+      output:
+      file "test-datasets" into ch_input_files
+
+      script:
+      """
+      git clone https://github.com/ncct-mibi/test-datasets --branch nxf-ont
+      """
+    }
+  } else {
+    if (params.input) { 
+      ch_input_files = Channel.fromPath(params.input, checkIfExists: true)
+    } else { 
+      exit 1, "Please specify a valid run directory to perform basecalling!" 
+    }
+  }
   
   process guppy_basecaller {
     publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy',
@@ -306,7 +325,7 @@ process seqkit {
 
   script:
   """
-  seqkit stats -all $fastq_file > seqkit.txt
+  seqkit stats --all $fastq_file > seqkit.txt
   """
 }
 
