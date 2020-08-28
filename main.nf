@@ -34,11 +34,11 @@ def helpMessage() {
 
   The typical command for running the pipeline is as follows:
 
-    nextflow run angelovangel/nxf-ont \\
-        --input /path/to/fast5/files/ \\
-        --flowcell FLO-PRO001 \\
-        --kit SQK-LSK109 \\
-        --barcode_kit EXP-NBD104 \\
+    nextflow run angelovangel/nxf-ont \
+        --input /path/to/fast5/files/ \
+        --flowcell FLO-PRO001 \
+        --kit SQK-LSK109 \
+        --barcode_kit EXP-NBD104 \
         -profile docker
   
   Mandatory arguments

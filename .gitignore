@@ -1,2 +1,4 @@
 fast5*
 fastq*
+.nextflow*
+work
