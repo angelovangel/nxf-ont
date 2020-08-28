@@ -326,7 +326,7 @@ process seqkit {
 
   script:
   """
-  seqkit stats -all $fastq_file > seqkit.txt
+  seqkit stats --all $fastq_file > seqkit.txt
   """
 }
 
