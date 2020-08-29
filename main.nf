@@ -54,7 +54,8 @@ def helpMessage() {
                                       Not required if '--config' is specified.
       --kit [str]                     Kit used to perform the sequencing e.g. SQK-LSK109. 
                                       Not required if '--config' is specified.
-      --barcode_kit [str]             Barcode kit used to perform the sequencing e.g. SQK-PBK004. 
+      --barcode_kits [str]            Space separated list of barcoding kit(s) or
+                                      expansion kit(s) to detect against. Must be in double quotes. 
                                       Not required if '--skip_demultiplexing' is specified.
       --trim_barcodes [bool]          Trim the barcodes from the output sequencesin the FastQ files (default: false).
       --config [file/str]             Guppy config file used for basecalling e.g. dna_r9.4.1_450bps_fast.cfg. 
