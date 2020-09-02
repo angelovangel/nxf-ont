@@ -9,8 +9,8 @@ https://github.com/angelovangel/nxf-ont
 
 Creator/Maintainer:
 aangeloo@gmail.com
+ifreicn@gmail.com
 */
-
 
 /*
 NXF ver 19.08+ needed because of the use of tuple instead of set
@@ -30,49 +30,52 @@ ANSI_RESET = "\033[0m"
 def helpMessage() {
 
   log.info"""
+==================
+  N X F - O N T
+==================
+A simple nextflow pipeline for processing raw Nanopore data
   
-  Usage:
+USAGE:
 
-  The typical command for running the pipeline is as follows:
+A typical command for running the pipeline is as follows:
 
-    nextflow run angelovangel/nxf-ont \\
-        --input /path/to/fast5/files/ \\
-        --flowcell FLO-PRO001 \\
-        --kit SQK-LSK109 \\
-        --barcode_kit EXP-NBD104 \\
-        -profile docker
+nextflow run angelovangel/nxf-ont \
+--input /path/to/fast5/files/ \
+--flowcell FLO-PRO001 \
+--kit SQK-LSK109 \
+--barcode_kit EXP-NBD104 \
+-profile docker
   
-  Mandatory arguments
-      --input [dir]                   The directory contains raw FAST5 files.
-      --csv [file]                    Comma-separated file containing pairs of sample names and barcodes.
-                                      Only required for renaming.
-      --cpus [int]                    Number of threads used for pipeline (default: 4)
-      -profile [str]                  Configuration profile to use. 
-                                      Available: docker.
+Mandatory arguments
+  --input [dir]                   The directory contains raw FAST5 files.
+  --csv [file]                    Comma-separated file containing pairs of sample names and barcodes. Only required for renaming.
+  --cpus [int]                    Number of threads used for pipeline (default: 4)
+  -profile [str]                  Configuration profile to use, available: docker.
   
-  Basecalling/Demultiplexing
-      --flowcell [str]                Flowcell used to perform the sequencing e.g. FLO-MIN106. 
-                                      Not required if '--config' is specified.
-      --kit [str]                     Kit used to perform the sequencing e.g. SQK-LSK109. 
-                                      Not required if '--config' is specified.
-      --barcode_kit [str]             Barcode kit used to perform the sequencing e.g. SQK-PBK004. 
-                                      Not required if '--skip_demultiplexing' is specified.
-      --trim_barcodes [bool]          Trim the barcodes from the output sequencesin the FastQ files (default: false).
-      --config [file/str]             Guppy config file used for basecalling e.g. dna_r9.4.1_450bps_fast.cfg. 
-                                      Cannot be used in conjunction with '--flowcell' and '--kit'.
-      --cpu_threads_per_caller [int]  Number of threads used for guppy_basecaller (default: 2, will overwrite '--cpus').
-      --num_callers [int]             Number of callers used for guppy_basecaller (default: 1).
-      --skip_basecalling [bool]       Skip basecalling with guppy_basecaller (default: false)
-      --skip_demultiplexing [bool]    Skip demultiplexing with guppy_barcoder (default: false)
+Basecalling/Demultiplexing
+  --flowcell [str]                Flowcell used to perform the sequencing e.g. FLO-MIN106. 
+                                  Not required if '--config' is specified.
+  --kit [str]                     Kit used to perform the sequencing e.g. SQK-LSK109. 
+                                  Not required if '--config' is specified.
+  --barcode_kits [str]            Space separated list of barcoding kit(s) or
+                                  expansion kit(s) to detect against. Must be in double quotes. 
+                                  Not required if '--skip_demultiplexing' is specified.
+  --trim_barcodes [bool]          Trim the barcodes from the output sequencesin the FastQ files (default: false).
+  --config [file/str]             Guppy config file used for basecalling e.g. dna_r9.4.1_450bps_fast.cfg. 
+                                  Cannot be used in conjunction with '--flowcell' and '--kit'.
+  --cpu_threads_per_caller [int]  Number of threads used for guppy_basecaller (default: 2, will overwrite '--cpus').
+  --num_callers [int]             Number of callers used for guppy_basecaller (default: 1).
+  --skip_basecalling [bool]       Skip basecalling with guppy_basecaller (default: false)
+  --skip_demultiplexing [bool]    Skip demultiplexing with guppy_barcoder (default: false)
 
-  Adapter trimming
-      --skip_porechop [bool]          Skip adapter trimming with porechop 
-                                      (default: false, if '--skip_demultiplexing' is specified, adapter trimming will also be skipped.)
+Adapter trimming
+  --skip_porechop [bool]          Skip adapter trimming with porechop 
+                                  (default: false, if '--skip_demultiplexing' is specified, adapter trimming will also be skipped.)
   
-  Other
-      --help                          Show this help message and exit.
+Other arguments
+  --help                          Show this help message and exit.
   
-  """.stripIndent()
+""".stripIndent()
 }
 
 if ( params.help ) {
@@ -120,6 +123,8 @@ if ( !params.skip_basecalling ) {
 
   if (workflow.profile.contains('test')) {
     process get_test_data {
+      
+      publishDir path: "${params.outdir}/testdata"
 
       output:
       file "test-datasets" into ch_input_files
