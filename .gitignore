@@ -2,4 +2,5 @@ fast5*
 fastq*
 .nextflow*
 work
-results*
+*results*
+
