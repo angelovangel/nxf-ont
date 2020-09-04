@@ -119,8 +119,30 @@ log.info "-\033[2m--------------------------------------------------\033[0m-"
 /*
 Guppy basecalling & demultiplexing
 */
+
+if (workflow.profile.contains('test')) {
+    process get_test_data {
+      
+      publishDir path: "${params.outdir}/testdata"
+
+      output:
+      file "test-datasets" into ch_input_files
+
+      script:
+      """
+      git clone https://github.com/ncct-mibi/test-datasets --branch nxf-ont
+      """
+    }
+  } else {
+    if (params.input) { 
+      ch_input_files = Channel.fromPath(params.input, checkIfExists: true)
+    } else { 
+      exit 1, "Please specify a valid run directory to perform basecalling!" 
+    }
+  }
 if ( !params.skip_basecalling ) {
 
+  /*
   if (workflow.profile.contains('test')) {
     process get_test_data {
       
@@ -141,6 +163,7 @@ if ( !params.skip_basecalling ) {
       exit 1, "Please specify a valid run directory to perform basecalling!" 
     }
   }
+  */
   
   process guppy_basecaller {
     publishDir path: params.barcode_kits ? "${params.outdir}/barcodes" : "${params.outdir}/basecalled", mode:'copy',
@@ -267,7 +290,8 @@ if ( !params.skip_basecalling ) {
     fi
     """
   }
-} else if (params.skip_basecalling && params.skip_demultiplexing){
+} else if ( params.skip_basecalling && params.skip_demultiplexing ){
+
     process rename_barcode {
       publishDir path: "${params.outdir}/renamed_barcodes", mode:'copy'
 
