@@ -296,7 +296,7 @@ if ( !params.skip_basecalling ) {
     script:
     """
     mkdir fastq
-    cd fastq_files
+    cd $fastq_files
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
       for dir in barcode*/
@@ -334,7 +334,7 @@ process porechop {
   file "logs/trimmed*.log" into ch_log_porechop
 
   when:
-  !params.skip_porechop && !params.skip_demultiplexing
+  !params.skip_porechop || !params.skip_demultiplexing
 
   script:
   //threads = params.cpus ? "--threads $params.cpus" : "--threads 4"
