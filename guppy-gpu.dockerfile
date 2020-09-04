@@ -1,12 +1,13 @@
 # Set the base image to Ubuntu 16.04 and NVIDIA GPU
 FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
 
-# File Author / Maintainer
-MAINTAINER Charlotte Berthelier <bertheli@biologie.ens.fr>
-
 ARG PACKAGE_VERSION=4.0.14
 ARG BUILD_PACKAGES="wget apt-transport-https"
 ARG DEBIAN_FRONTEND=noninteractive
+
+# File Author / Maintainer
+LABEL maintainer="aangeloo@gmail.com"
+LABEL description="A docker image containing the ONT guppy_gpu version ${PACKAGE_VERSION}"
 
 RUN apt-get update && \
     apt-get install --yes $BUILD_PACKAGES \

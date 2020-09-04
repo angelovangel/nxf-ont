@@ -125,7 +125,7 @@ if ( !params.skip_basecalling ) {
   if (workflow.profile.contains('test')) {
     process get_test_data {
       
-      publishDir path: "${params.outdir}/testdata"
+      publishDir path: "${params.outdir}/testdata", mode: 'copy'
 
       output:
       file "test-datasets" into ch_input_files
