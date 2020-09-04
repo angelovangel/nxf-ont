@@ -115,7 +115,7 @@ if (!params.skip_demultiplexing) {
   if (params.csv) summary['csv'] = params.csv
 }
 summary['adapter trimming'] = params.skip_porechop ? 'No' : 'Yes'
-summary['quality control'] = 'pycoQC & seqkit'
+summary['quality control'] = params.skip_pycoqc ? 'seqkit': 'pycoQC & seqkit'
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "-\033[2m--------------------------------------------------\033[0m-"
 
@@ -397,6 +397,7 @@ process seqkit {
 /*
 Get the software versions
 */
+/*
 process get_software_versions {
   publishDir path: "${params.outdir}/pipeline_info", mode:'copy'
 
@@ -413,3 +414,4 @@ process get_software_versions {
   seqkit version &>> pipeline_info.txt
   """
 }
+*/
