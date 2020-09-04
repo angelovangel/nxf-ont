@@ -357,13 +357,11 @@ process porechop {
 Quality control with pycoQC
 */
 process pycoqc {
-  
-  ch_summary_guppy = Channel.empty()
 
   publishDir path: "${params.outdir}/pycoqc", mode:'copy'
   
   input:
-  file summary_file from ch_summary_guppy
+  file summary_file from params.skip_pycoqc ? Channel.empty(): ch_summary_guppy
 
   output:
   file "pycoQC.html"
