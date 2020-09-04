@@ -397,12 +397,11 @@ process seqkit {
 /*
 Get the software versions
 */
-/*
 process get_software_versions {
   publishDir path: "${params.outdir}/pipeline_info", mode:'copy'
 
   input:
-  file "*.txt" from ch_version_guppy
+  file "*.txt" from (params.skip_basecalling || skip_demultiplexing) ? Channel.empty() : ch_version_guppy
 
   output:
   file "pipeline_info.txt"
@@ -414,4 +413,3 @@ process get_software_versions {
   seqkit version &>> pipeline_info.txt
   """
 }
-*/
