@@ -296,8 +296,8 @@ if ( !params.skip_basecalling ) {
     script:
     """
     mkdir fastq
-    test = \$PWD
-    fastqdir=\$test'/fastq'
+    #test = \$PWD
+    fastqdir=\$PWD\/fastq
     cd $fastq_files
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
