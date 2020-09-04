@@ -213,6 +213,12 @@ if ( !params.skip_basecalling ) {
     """
   }
 } else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
+
+  if (params.input) { 
+    ch_input_files = Channel.fromPath(params.input, checkIfExists: true)
+  } else { 
+    exit 1, "Please specify a valid run directory to perform demultiplexing process!" 
+  }
   
   process guppy_barcoder {
     publishDir path: "${params.outdir}/barcodes", mode:'copy'
@@ -273,7 +279,7 @@ if ( !params.skip_basecalling ) {
   if (params.input) { 
     ch_input_files = Channel.fromPath(params.input, checkIfExists: true)
   } else { 
-    exit 1, "Please specify a valid run directory to perform basecalling!" 
+    exit 1, "Please specify a valid run directory to perform rename process!" 
   }
 
   process rename_barcode {
@@ -354,6 +360,9 @@ process pycoqc {
 
   output:
   file "pycoQC.html"
+
+  when:
+  !params.skip_basecalling
 
   script:
   """
