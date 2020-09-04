@@ -72,6 +72,9 @@ Adapter trimming
   --skip_porechop [bool]          Skip adapter trimming with porechop 
                                   (default: false, if '--skip_demultiplexing' is specified, adapter trimming will also be skipped.)
   
+Quality control
+  --skip_pycoqc [bool]            Skip pycoQC (default: false)
+
 Other arguments
   --help                          Show this help message and exit.
   
@@ -363,7 +366,7 @@ process pycoqc {
   file "pycoQC.html"
 
   when:
-  !params.skip_basecalling
+  !params.skip_pycoqc
 
   script:
   """
