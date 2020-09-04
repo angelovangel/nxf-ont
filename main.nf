@@ -357,6 +357,9 @@ process porechop {
 Quality control with pycoQC
 */
 process pycoqc {
+  
+  ch_summary_guppy = Channel.empty()
+
   publishDir path: "${params.outdir}/pycoqc", mode:'copy'
   
   input:
