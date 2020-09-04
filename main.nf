@@ -151,7 +151,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
     file "rename.log" optional true into ch_log_rename
-    file "sequencing_summary.txt" into ch_summary_guppy
+    file "sequencing_summary*" into ch_summary_guppy
     file "v_guppy_basecaller.txt" into ch_version_guppy
 
     script:
@@ -181,7 +181,7 @@ if ( !params.skip_basecalling ) {
       $config \\
       --compress_fastq \\
       &> guppy_basecaller.log
-    cp results-guppy-basecaller/sequencing_summary.txt .
+    cp results-guppy-basecaller/sequencing_summary* .
 
     mkdir fastq
     cd results-guppy-basecaller/pass
@@ -219,7 +219,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_barcoder.log" into ch_log_guppy_barcoder
     file "rename.log" optional true into ch_log_rename
-    file "sequencing_summary.txt" into ch_summary_guppy
+    file "sequencing_summary*" into ch_summary_guppy
     file "v_guppy_barcoder.txt" into ch_version_guppy
 
     script:
@@ -237,7 +237,7 @@ if ( !params.skip_basecalling ) {
       $trim_barcodes \\
       --worker_threads $params.cpus \\
       &> guppy_barcoder.log
-    cp results-guppy-barcoder/sequencing_summary.txt .
+    cp results-guppy-barcoder/sequencing_summary* .
 
     mkdir fastq
     cd results-guppy-barcoder
@@ -261,6 +261,43 @@ if ( !params.skip_basecalling ) {
       done < ../$csv_file
     fi
     """
+  } else if (skip_basecalling && skip_demultiplexing){
+    process rename_barcode {
+      publishDir path: "${params.outdir}/renamed_barcodes", mode:'copy'
+
+      input:
+      file fastq_files from ch_input_files
+      file csv_file from ch_input_csv.ifEmpty([])
+      
+      output:
+      file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
+      file "rename.log" into ch_log_rename
+
+      script:
+      """
+      mkdir fastq
+      cd fastq_files
+      if [ "\$(find . -type d -name "barcode*" )" != "" ]
+      then
+        for dir in barcode*/
+        do
+          dir=\${dir%*/}
+          cat \$dir/*.fastq.gz > ../../fastq/\$dir.fastq.gz
+        done
+      else
+        cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
+      fi
+
+      if [ ! -z "$params.csv" ] && [ ! -z "$barcode_kits" ]
+      then
+        while IFS=, read -r ob nb
+        do
+          echo rename \$ob.fastq.gz to \$nb.fastq.gz &>> ../../rename.log
+          mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
+        done < ../../$csv_file
+      fi
+      """
+    }
   }
 }
 
