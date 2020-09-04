@@ -300,7 +300,7 @@ if ( !params.skip_basecalling ) {
     cd $fastq_files
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
-      for dir in $fastq_files/barcode*/
+      for dir in barcode*/
       do
         dir=\${dir%*/}
         cat \$dir/*.fastq.gz > ../fastq/\$dir.fastq.gz
