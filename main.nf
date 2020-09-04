@@ -308,7 +308,7 @@ if ( !params.skip_basecalling ) {
       cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
     fi
 
-    if [ ! -z "$params.csv" ] && [ ! -z "$barcode_kits" ]
+    if [ ! -z "$params.csv" ] && [ ! -z "$params.barcode_kits" ]
     then
       while IFS=, read -r ob nb
       do
