@@ -353,7 +353,6 @@ process porechop {
 /*
 Quality control with pycoQC
 */
-/*
 process pycoqc {
   publishDir path: "${params.outdir}/pycoqc", mode:'copy'
   
@@ -372,7 +371,6 @@ process pycoqc {
     --html_outfile pycoQC.html
   """
 }
-*/
 
 /*
 Quality control with seqkit
