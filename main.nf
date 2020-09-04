@@ -296,7 +296,7 @@ if ( !params.skip_basecalling ) {
     script:
     """
     mkdir fastq
-    sudo chmod a+rwx fastq
+    chmod a+rwx fastq
     cd $fastq_files
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
