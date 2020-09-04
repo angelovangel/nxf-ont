@@ -266,7 +266,8 @@ if ( !params.skip_basecalling ) {
       done < ../$csv_file
     fi
     """
-  } else if (skip_basecalling && skip_demultiplexing){
+  }
+} else if (skip_basecalling && skip_demultiplexing){
     process rename_barcode {
       publishDir path: "${params.outdir}/renamed_barcodes", mode:'copy'
 
@@ -304,12 +305,11 @@ if ( !params.skip_basecalling ) {
       """
     }
   }
-}
 
 /*
 Adapter trimming with porechop
 */
-process porechop {
+process porechop { 
   publishDir path: "${params.outdir}/porechop", mode:'copy'
 
   input:
