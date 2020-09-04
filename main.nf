@@ -270,45 +270,49 @@ if ( !params.skip_basecalling ) {
   }
 } else if ( params.skip_basecalling && params.skip_demultiplexing ){
 
-  ch_input_files = Channel.fromPath(params.input, checkIfExists: true)
-
-    process rename_barcode {
-      publishDir path: "${params.outdir}/renamed_barcodes", mode:'copy'
-
-      input:
-      file fastq_files from ch_input_files
-      file csv_file from ch_input_csv.ifEmpty([])
-      
-      output:
-      file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
-      file "rename.log" into ch_log_rename
-
-      script:
-      """
-      mkdir fastq
-      cd fastq_files
-      if [ "\$(find . -type d -name "barcode*" )" != "" ]
-      then
-        for dir in barcode*/
-        do
-          dir=\${dir%*/}
-          cat \$dir/*.fastq.gz > ../../fastq/\$dir.fastq.gz
-        done
-      else
-        cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
-      fi
-
-      if [ ! -z "$params.csv" ] && [ ! -z "$barcode_kits" ]
-      then
-        while IFS=, read -r ob nb
-        do
-          echo rename \$ob.fastq.gz to \$nb.fastq.gz &>> ../../rename.log
-          mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
-        done < ../../$csv_file
-      fi
-      """
-    }
+  if (params.input) { 
+    ch_input_files = Channel.fromPath(params.input, checkIfExists: true)
+  } else { 
+    exit 1, "Please specify a valid run directory to perform basecalling!" 
   }
+
+  process rename_barcode {
+    publishDir path: "${params.outdir}/renamed_barcodes", mode:'copy'
+
+    input:
+    file fastq_files from ch_input_files
+    file csv_file from ch_input_csv.ifEmpty([])
+      
+    output:
+    file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
+    file "rename.log" into ch_log_rename
+
+    script:
+    """
+    mkdir fastq
+    cd fastq_files
+    if [ "\$(find . -type d -name "barcode*" )" != "" ]
+    then
+      for dir in barcode*/
+      do
+        dir=\${dir%*/}
+        cat \$dir/*.fastq.gz > ../../fastq/\$dir.fastq.gz
+      done
+    else
+      cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
+    fi
+
+    if [ ! -z "$params.csv" ] && [ ! -z "$barcode_kits" ]
+    then
+      while IFS=, read -r ob nb
+      do
+        echo rename \$ob.fastq.gz to \$nb.fastq.gz &>> ../../rename.log
+        mv ../../fastq/\$ob.fastq.gz ../../fastq/\$nb.fastq.gz
+      done < ../../$csv_file
+    fi
+    """
+  }
+}
 
 /*
 Adapter trimming with porechop
