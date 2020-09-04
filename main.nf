@@ -360,7 +360,7 @@ process pycoqc {
   publishDir path: "${params.outdir}/pycoqc", mode:'copy'
   
   input:
-  file summary_file from ch_summary_guppy
+  file summary_file from ch_summary_guppy.ifEmpty()
 
   output:
   file "pycoQC.html"
