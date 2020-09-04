@@ -398,7 +398,7 @@ process get_software_versions {
   publishDir path: "${params.outdir}/pipeline_info", mode:'copy'
 
   input:
-  file "*.txt" from ch_version_guppy
+  file "*.txt" from ch_version_guppy.ifEmpty([])
 
   output:
   file "pipeline_info.txt"
