@@ -302,7 +302,14 @@ if ( !params.skip_basecalling ) {
       for dir in barcode*/
       do
         dir=\${dir%*/}
-        cat \$dir/*.fastq.gz > ../../fastq/\$dir.fastq.gz
+        if [[ \$dir == *.gz ]]
+        then
+          cat \$dir/*.fastq.gz > ../../fastq/\$dir.fastq.gz
+        fi
+        else
+          cat \$dir/*.fastq > ../../fastq/\$dir.fastq
+          gzip ../../fastq/\$dir.fastq
+        fi
       done
     else
       cat *.fastq.gz > ../../fastq/unclassified.fastq.gz
