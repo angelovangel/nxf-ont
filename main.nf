@@ -305,7 +305,6 @@ if ( !params.skip_basecalling ) {
         if [[ \$dir == *.gz ]]
         then
           cat \$dir/*.fastq.gz > ../../fastq/\$dir.fastq.gz
-        fi
         else
           cat \$dir/*.fastq > ../../fastq/\$dir.fastq
           gzip ../../fastq/\$dir.fastq
