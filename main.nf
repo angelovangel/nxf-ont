@@ -296,25 +296,24 @@ if ( !params.skip_basecalling ) {
     script:
     """
     mkdir fastq
-    #test = \$PWD
-    fastqdir=\$PWD'/fastq'
+    fastqdir=\$PWD
     cd $fastq_files
     if [ "\$(find . -type d -name "barcode*" )" != "" ]
     then
       for dir in barcode*/
       do
         dir=\${dir%*/}
-        cat \$dir/*.fastq.gz > \$fastqdir/\$dir.fastq.gz
+        cat \$dir/*.fastq.gz > \$fastqdir/fastq/\$dir.fastq.gz
       done
     else
-      cat *.fastq.gz > \$fastqdir/unclassified.fastq.gz
+      cat *.fastq.gz > \$fastqdir/fastq/unclassified.fastq.gz
     fi
 
     if [ ! -z "$params.csv" ] && [ ! -z "$params.barcode_kits" ]
     then
       while IFS=, read -r ob nb
       do
-        echo rename \$fastqdir/\$ob.fastq.gz to \$fastqdir/\$nb.fastq.gz &>> \$fastqdir/rename.log
+        echo rename \$fastqdir/fastq/\$ob.fastq.gz to \$fastqdir/fastq/\$nb.fastq.gz &>> \$fastqdir/fastq/rename.log
         mv \$fastqdir/fastq/\$ob.fastq.gz \$fastqdir/fastq/\$nb.fastq.gz
       done < \$fastqdir/$csv_file
     fi
