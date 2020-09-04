@@ -401,7 +401,7 @@ process get_software_versions {
   publishDir path: "${params.outdir}/pipeline_info", mode:'copy'
 
   input:
-  file "*.txt" from (params.skip_basecalling || skip_demultiplexing) ? Channel.empty() : ch_version_guppy
+  file "*.txt" from params.skip_basecalling || skip_demultiplexing ? Channel.empty() : ch_version_guppy
 
   output:
   file "pipeline_info.txt"
