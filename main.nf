@@ -267,7 +267,7 @@ if ( !params.skip_basecalling ) {
     fi
     """
   }
-} else if (skip_basecalling && skip_demultiplexing){
+} else if (params.skip_basecalling && params.skip_demultiplexing){
     process rename_barcode {
       publishDir path: "${params.outdir}/renamed_barcodes", mode:'copy'
 
