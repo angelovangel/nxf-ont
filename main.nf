@@ -313,7 +313,7 @@ if ( !params.skip_basecalling ) {
     then
       while IFS=, read -r ob nb
       do
-        echo rename \$fastqdir/fastq/\$ob.fastq.gz to \$fastqdir/fastq/\$nb.fastq.gz &>> \$fastqdir/fastq/rename.log
+        echo rename \$fastqdir/fastq/\$ob.fastq.gz to \$fastqdir/fastq/\$nb.fastq.gz &>> \$fastqdir/rename.log
         mv \$fastqdir/fastq/\$ob.fastq.gz \$fastqdir/fastq/\$nb.fastq.gz
       done < \$fastqdir/$csv_file
     fi
