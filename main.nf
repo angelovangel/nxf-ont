@@ -72,6 +72,9 @@ Adapter trimming
   --skip_porechop [bool]          Skip adapter trimming with porechop 
                                   (default: false, if '--skip_demultiplexing' is specified, adapter trimming will also be skipped.)
   
+Quality control
+  --skip_pycoqc [bool]            Skip pycoQC (default: false)
+
 Other arguments
   --help                          Show this help message and exit.
   
@@ -112,13 +115,14 @@ if (!params.skip_demultiplexing) {
   if (params.csv) summary['csv'] = params.csv
 }
 summary['adapter trimming'] = params.skip_porechop ? 'No' : 'Yes'
-summary['quality control'] = 'pycoQC & seqkit'
+summary['quality control'] = params.skip_pycoqc ? 'seqkit': 'pycoQC & seqkit'
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "-\033[2m--------------------------------------------------\033[0m-"
 
 /*
 Guppy basecalling & demultiplexing
 */
+
 if ( !params.skip_basecalling ) {
 
   if (workflow.profile.contains('test')) {
@@ -156,7 +160,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_basecaller.log" into ch_log_guppy_basecaller
     file "rename.log" optional true into ch_log_rename
-    file "sequencing_summary.txt" into ch_summary_guppy
+    file "sequencing_summary*" into ch_summary_guppy
     file "v_guppy_basecaller.txt" into ch_version_guppy
 
     script:
@@ -186,7 +190,7 @@ if ( !params.skip_basecalling ) {
       $config \\
       --compress_fastq \\
       &> guppy_basecaller.log
-    cp results-guppy-basecaller/sequencing_summary.txt .
+    cp results-guppy-basecaller/sequencing_summary* .
 
     mkdir fastq
     cd results-guppy-basecaller/pass
@@ -212,6 +216,12 @@ if ( !params.skip_basecalling ) {
     """
   }
 } else if ( params.skip_basecalling && ! params.skip_demultiplexing && params.barcode_kits ) {
+
+  if (params.input) { 
+    ch_input_files = Channel.fromPath(params.input, checkIfExists: true)
+  } else { 
+    exit 1, "Please specify a valid run directory to perform demultiplexing process!" 
+  }
   
   process guppy_barcoder {
     publishDir path: "${params.outdir}/barcodes", mode:'copy'
@@ -224,7 +234,7 @@ if ( !params.skip_basecalling ) {
     file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
     file "guppy_barcoder.log" into ch_log_guppy_barcoder
     file "rename.log" optional true into ch_log_rename
-    file "sequencing_summary.txt" into ch_summary_guppy
+    file "sequencing_summary*" into ch_summary_guppy
     file "v_guppy_barcoder.txt" into ch_version_guppy
 
     script:
@@ -242,7 +252,7 @@ if ( !params.skip_basecalling ) {
       $trim_barcodes \\
       --worker_threads $params.cpus \\
       &> guppy_barcoder.log
-    cp results-guppy-barcoder/sequencing_summary.txt .
+    cp results-guppy-barcoder/sequencing_summary* .
 
     mkdir fastq
     cd results-guppy-barcoder
@@ -267,12 +277,57 @@ if ( !params.skip_basecalling ) {
     fi
     """
   }
+} else if ( params.skip_basecalling && params.skip_demultiplexing ){
+
+  if (params.input) { 
+    ch_input_files = Channel.fromPath(params.input, checkIfExists: true)
+  } else { 
+    exit 1, "Please specify a valid run directory to perform rename process!" 
+  }
+
+  process rename_barcode {
+    publishDir path: "${params.outdir}/renamed_barcodes", mode:'copy'
+
+    input:
+    file fastq_files from ch_input_files
+    file csv_file from ch_input_csv.ifEmpty([])
+      
+    output:
+    file "fastq/*.fastq.gz" into ch_fastq, ch_for_seqkit
+    file "rename.log" into ch_log_rename
+
+    script:
+    """
+    mkdir fastq
+    fastqdir=\$PWD
+    cd $fastq_files
+    if [ "\$(find . -type d -name "barcode*" )" != "" ]
+    then
+      for dir in barcode*/
+      do
+        dir=\${dir%*/}
+        cat \$dir/*.fastq.gz > \$fastqdir/fastq/\$dir.fastq.gz
+      done
+    else
+      cat *.fastq.gz > \$fastqdir/fastq/unclassified.fastq.gz
+    fi
+
+    if [ ! -z "$params.csv" ] && [ ! -z "$params.barcode_kits" ]
+    then
+      while IFS=, read -r ob nb
+      do
+        echo rename \$fastqdir/fastq/\$ob.fastq.gz to \$fastqdir/fastq/\$nb.fastq.gz &>> \$fastqdir/rename.log
+        mv \$fastqdir/fastq/\$ob.fastq.gz \$fastqdir/fastq/\$nb.fastq.gz
+      done < \$fastqdir/$csv_file
+    fi
+    """
+  }
 }
 
 /*
 Adapter trimming with porechop
 */
-process porechop {
+process porechop { 
   publishDir path: "${params.outdir}/porechop", mode:'copy'
 
   input:
@@ -283,7 +338,7 @@ process porechop {
   file "logs/trimmed*.log" into ch_log_porechop
 
   when:
-  !params.skip_porechop && !params.skip_demultiplexing
+  !params.skip_porechop
 
   script:
   //threads = params.cpus ? "--threads $params.cpus" : "--threads 4"
@@ -302,13 +357,17 @@ process porechop {
 Quality control with pycoQC
 */
 process pycoqc {
+
   publishDir path: "${params.outdir}/pycoqc", mode:'copy'
   
   input:
-  file summary_file from ch_summary_guppy
+  file summary_file from params.skip_pycoqc ? Channel.empty(): ch_summary_guppy
 
   output:
   file "pycoQC.html"
+
+  when:
+  !params.skip_pycoqc
 
   script:
   """
@@ -338,11 +397,12 @@ process seqkit {
 /*
 Get the software versions
 */
+/*
 process get_software_versions {
   publishDir path: "${params.outdir}/pipeline_info", mode:'copy'
 
   input:
-  file "*.txt" from ch_version_guppy
+  file "*.txt" from params.skip_basecalling || skip_demultiplexing ? Channel.empty() : ch_version_guppy
 
   output:
   file "pipeline_info.txt"
@@ -354,3 +414,4 @@ process get_software_versions {
   seqkit version &>> pipeline_info.txt
   """
 }
+*/
