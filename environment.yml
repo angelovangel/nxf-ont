@@ -7,3 +7,5 @@ dependencies:
   - porechop=0.2.4
   - pycoqc=2.5.0.23
   - seqkit=0.13.2
+  - r-base=4.0.2
+  
