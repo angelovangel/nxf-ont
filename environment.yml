@@ -8,4 +8,5 @@ dependencies:
   - pycoqc=2.5.0.23
   - seqkit=0.13.2
   - r-base=4.0.2
-  
+  - bioconductor-seqtools=1.22.0
+  - r-writexl=1.3.1

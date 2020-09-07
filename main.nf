@@ -20,16 +20,9 @@ if( !nextflow.version.matches('>=19.08') ) {
     exit 1
 }
 
-/*
-* ANSI escape codes to color output messages
-*/
-ANSI_GREEN = "\033[1;32m"
-ANSI_RED = "\033[1;31m"
-ANSI_RESET = "\033[0m"
-
 def helpMessage() {
 
-  log.info"""
+log.info"""
 ==================
   N X F - O N T
 ==================
@@ -50,7 +43,7 @@ Mandatory arguments
   --input [dir]                   The directory contains raw FAST5 files.
   --csv [file]                    Comma-separated file containing pairs of sample names and barcodes. Only required for renaming.
   --cpus [int]                    Number of threads used for pipeline (default: 4)
-  -profile [str]                  Configuration profile to use, available: docker.
+  -profile [str]                  Configuration profile to use, available: test.
   
 Basecalling/Demultiplexing
   --flowcell [str]                Flowcell used to perform the sequencing e.g. FLO-MIN106. 
@@ -85,18 +78,7 @@ if ( params.help ) {
   helpMessage()
   exit 0
 }
-
-//ch_input_files = params.input ? Channel.fromPath( params.input ) : Channel.empty()
-ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
-
-if ( params.flowcell && !params.kit ) { 
-  exit 1, "Error: no valid kit found."  
-}
-
-if ( params.kit && !params.flowcell ) { 
-  exit 1, "Error: no valid flowcell found."  
-} 
-
+ // print run summary
 def summary = [:]
 summary['input'] = params.input
 summary['cpus'] = params.cpus
@@ -116,8 +98,22 @@ if (!params.skip_demultiplexing) {
 }
 summary['adapter trimming'] = params.skip_porechop ? 'No' : 'Yes'
 summary['quality control'] = params.skip_pycoqc ? 'seqkit': 'pycoQC & seqkit'
+
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "-\033[2m--------------------------------------------------\033[0m-"
+
+// define input channels, if params empty leave them empty
+ch_input_csv = params.csv ? Channel.fromPath( params.csv, checkIfExists: true ) : Channel.empty()
+
+if ( params.flowcell && !params.kit ) { 
+  exit 1, "Error: no valid kit found."  
+}
+
+if ( params.kit && !params.flowcell ) { 
+  exit 1, "Error: no valid flowcell found."  
+} 
+
+
 
 /*
 Guppy basecalling & demultiplexing
@@ -371,26 +367,26 @@ process pycoqc {
 
   script:
   """
-  pycoQC --summary_file $summary_file \\
-    --html_outfile pycoQC.html
+  pycoQC --summary_file $summary_file --html_outfile pycoQC.html
   """
 }
 
 /*
-Quality control with seqkit
+Quality control with seqTools
 */
-process seqkit {
-  publishDir path: "${params.outdir}/seqkit", mode:'copy'
+process seqtools {
+  publishDir path: "${params.outdir}/fastq-qc", mode:'copy'
 
   input:
   file fastq_file from !params.skip_porechop && !params.skip_demultiplexing ? ch_porechop.collect() : ch_for_seqkit.collect()
 
   output:
-  file "seqkit.txt"
+  file "fastq-stats.csv"
+  file "fastq-stats.xlsx"
 
   script:
   """
-  seqkit stats --all $fastq_file > seqkit.txt
+  seqtools.R $fastq_file
   """
 }
 
