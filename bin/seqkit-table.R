@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #============
 #
-# make a nice formatted table from the seqkit stats output
+# make a nice formatted table from the seqtools stats output
 #
 #============
 require(DT)

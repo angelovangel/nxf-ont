@@ -375,7 +375,7 @@ process pycoqc {
 Quality control with seqTools
 */
 process seqtools {
-  publishDir path: "${params.outdir}/fastq-qc", mode:'copy'
+  publishDir path: "${params.outdir}/fastq-stats", mode:'copy'
 
   input:
   file fastq_file from !params.skip_porechop && !params.skip_demultiplexing ? ch_porechop.collect() : ch_for_seqkit.collect()
