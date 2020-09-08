@@ -374,15 +374,19 @@ process pycoqc {
 /*
 Quality control with seqTools
 */
+Channel.fromPath('bin/fastq-stats-report.Rmd').set{ fastq_stats_report_ch }
+
 process seqtools {
   publishDir path: "${params.outdir}/fastq-stats", mode:'copy'
 
   input:
   file fastq_file from !params.skip_porechop && !params.skip_demultiplexing ? ch_porechop.collect() : ch_for_seqkit.collect()
+  file 'fastq-stats-report.Rmd' from fastq_stats_report_ch
 
   output:
   file "fastq-stats.csv"
   file "fastq-stats.xlsx"
+  file "fastq-stats-report.html"
 
   script:
   """

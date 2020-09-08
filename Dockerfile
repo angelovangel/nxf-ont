@@ -4,7 +4,7 @@ LABEL maintainer="aangeloo@gmail.com"
 LABEL description="Docker image for angelovangel/nxf-ont"
 
 COPY environment.yml .
-RUN apt-get update -y && apt-get install -y pigz procps && apt-get clean -y
+RUN apt-get update -y && apt-get install -y pigz procps libxt-dev && apt-get clean -y
 RUN conda env create -f environment.yml && conda clean -a
 
 # Add conda installation dir to PATH (instead of doing 'conda activate')
