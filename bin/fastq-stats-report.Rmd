@@ -114,8 +114,18 @@ spark_phred <- function(qqobj, i) {
 					)
 }
 
+spk_tool <- function(labels, values) {
+  htmlwidgets::JS(
+    sprintf(
+		"function(sparkline, options, field){ return %s[field[0].offset]; }",
+    jsonlite::toJSON(paste0(labels, " : ",values))
+    )
+  )
+}
 spark_kmers <- function(qqobj, i) {
-	spk_chr(unname(qqobj@kmer[ , i]), width = 320, height = 40, type = "bar")
+	spk_chr(unname(qqobj@kmer[ , i]), width = 320, height = 40, type = "bar",
+					tooltipFormatter = spk_tool(names(qqobj@kmer[ , i]), qqobj@kmer[ , i])
+					)
 }
 
 gc_df <- data.frame(
@@ -123,7 +133,7 @@ gc_df <- data.frame(
 	gc_content_dist = sapply(1:qq@nFiles, function(x) { spark_gc(qq, x) }),
 	q_score_dist = sapply(1:qq@nFiles, function(x) { spark_phred(qq, x) }),
 	# h
-	k_mer_dist = sapply(1:qq@nFiles, function(x) { spark_kmers(qq, x) })
+	k_mer_counts = sapply(1:qq@nFiles, function(x) { spark_kmers(qq, x) })
 )
 
 gc_df %>%
