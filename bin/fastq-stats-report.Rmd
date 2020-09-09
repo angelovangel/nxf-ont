@@ -57,7 +57,7 @@ get_nx <- function(qqobj, n) {
 #=======================================================================
 # start by executing fastqq on the input fqfiles, which are supplied as params by the calling script
 cat(params$fqfiles)
-qq <- fastqq(params$fqfiles, k = 2)
+qq <- fastqq(params$fqfiles, k = 3)
 # because fastqq does not error
 if(nFiles(qq) == 0) {
 	stop("No valid fastq file found")
@@ -93,7 +93,7 @@ df %>%
 
 ***
 
-### GC-content and Phred-score distribution
+### GC-content, Phred-score and k-mer(3) distributions
 ```{r table2, include=TRUE}
 sparkline(0) # load dependencies
 # see https://omnipotent.net/jquery.sparkline/#s-docs
@@ -102,22 +102,28 @@ sparkline(0) # load dependencies
 spark_gc <- function(qqobj, i) {
 	spk_chr(paste(names(gcContent(qqobj, i)), ":", round(gcContent(qqobj, i)/qq@nReads[i], 3), sep = ""), 
 					# GC content (%) is per Read counts, so to get dist divide by read count
-					width = 120,
+					width = 180, height = 40,
 					tooltipFormat = "<span style='color: {{color}}'>&#9679;</span> {{prefix}}avg GC% {{x}} : {{y}} {{suffix}}</span>"
 					)
 }
 
 spark_phred <- function(qqobj, i) {
 	spk_chr(paste(names(phredDist(qqobj, i)), ":", round(phredDist(qqobj, i), 3), sep = ""), 
-					width = 120,
+					width = 180, height = 40,
 					tooltipFormat = "<span style='color: {{color}}'>&#9679;</span> {{prefix}}q-score {{x}} : {{y}} {{suffix}}</span>"
 					)
+}
+
+spark_kmers <- function(qqobj, i) {
+	spk_chr(unname(qqobj@kmer[ , i]), width = 320, height = 40, type = "bar")
 }
 
 gc_df <- data.frame(
 	file = basename(qq@filenames),
 	gc_content_dist = sapply(1:qq@nFiles, function(x) { spark_gc(qq, x) }),
-	q_score_dist = sapply(1:qq@nFiles, function(x) { spark_phred(qq, x)})
+	q_score_dist = sapply(1:qq@nFiles, function(x) { spark_phred(qq, x) }),
+	# h
+	k_mer_dist = sapply(1:qq@nFiles, function(x) { spark_kmers(qq, x) })
 )
 
 gc_df %>%
@@ -127,11 +133,4 @@ gc_df %>%
 ```
 
 ***
-
-### k-mer counts distribution
-
-```{r table3, include=TRUE}
-
-
-```
 
