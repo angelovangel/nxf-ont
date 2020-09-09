@@ -9,3 +9,5 @@ RUN conda env create -f environment.yml && conda clean -a
 
 # Add conda installation dir to PATH (instead of doing 'conda activate')
 ENV PATH /opt/conda/envs/nxf-ont-1.1/bin:$PATH
+# sparkline is not on conda, so install here manually
+RUN R -e "install.packages('sparkline', repos='http://cran.rstudio.com/')"

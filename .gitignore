@@ -1,8 +1,7 @@
-fast5*
-fastq*
 .nextflow*
 work
-*results*
+results*
+test-results*
 .Rhistory
 
 
