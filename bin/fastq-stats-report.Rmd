@@ -93,7 +93,7 @@ df %>%
 
 ***
 
-### GC-content, Phred-score and k-mer(3) distributions
+### GC-content, Phred-score and k-mer (k = 3) distributions
 ```{r table2, include=TRUE}
 sparkline(0) # load dependencies
 # see https://omnipotent.net/jquery.sparkline/#s-docs
@@ -142,5 +142,4 @@ gc_df %>%
 
 ```
 
-***
 
